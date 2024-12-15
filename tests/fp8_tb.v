@@ -45,14 +45,25 @@ module FP8VectorMul_tb;
     end
 
     initial begin
-        #100;
+        q = 0;
+        a = 0;
+        b = 0;
+        c = 0;
+        d = 0;
+        #20;
+        q = {1'b0, 4'b0111, 3'b100}; // +1 * 2^(7-7) * (1 + 1/2 * 0 + 1/4 * 0 + 1/8 * 0) = 1.5
+        a = {1'b0, 4'b0111, 3'b100}; // +1 * 2^(7-7) * (1 + 1/2 * 1 + 1/4 * 0 + 1/8 * 0) = 1.5
+        b = {1'b1, 4'b1000, 3'b100}; // -1 * 2^(8-7) * (1 + 1/2 * 1 + 1/4 * 0 + 1/8 * 0) = -3
+        c = {1'b0, 4'b1000, 3'b000}; // +1 * 2^(8-7) * (1 + 1/2 * 0 + 1/4 * 0 + 1/8 * 0) = 2
+        d = {1'b1, 4'b1001, 3'b000}; // -1 * 2^(9-7) * (1 + 1/2 * 0 + 1/4 * 0 + 1/8 * 0) = -4
+        #50;
         $finish;
     end
 
     initial begin
         $monitor(
-            "Time = %f, QA = %b, QB = %b, QC = %b , QD = %b", 
-            $time, qa, qb, qc, qd
+            "Time = %f, rst=%b, QA = %b, QB = %b, QC = %b , QD = %b", 
+            $time, rst, qa, qb, qc, qd
         );
         $dumpfile("dump.vcd");
         $dumpvars(0, FP8VectorMul_tb);

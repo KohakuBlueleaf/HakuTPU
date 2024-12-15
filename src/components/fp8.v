@@ -27,9 +27,9 @@ module FP8VectorMul (
     wire [47:0] C;
     wire [47:0] PCIN;
     wire [47:0] P;
-    wire [26:0] D;
+    wire [29:0] A;
     assign B = e5m2mode ? {16'b0, q[1:0]} : {15'b0, q[2:0]};
-    assign D = e5m2mode 
+    assign A = e5m2mode 
                 ? {13'b0, d[1:0], 2'b0, c[1:0], 2'b0, b[1:0], 2'b0, a[1:0]} 
                 : { 6'b0, d[2:0], 3'b0, c[2:0], 3'b0, b[2:0], 3'b0, a[2:0]} ;
     assign C = e5m2mode
@@ -39,19 +39,22 @@ module FP8VectorMul (
                 ? {1'b0, q[6:2], 1'b0, q[6:2], 1'b0, q[6:2], 1'b0, q[6:2], 24'b0}
                 : {1'b0, q[6:3], 1'b0, q[6:3], 1'b0, q[6:3], 1'b0, q[6:3], 28'b0};
 
-    DSP dsp(
+    DSP #(
+        .INPUTREG(0),
+        .OUTPUTREG(0),
+        .DSPPIPEREG(0),
+        .CONTROLREG(0)
+    ) dsp(
         .enable(1'b1),
         .clk(clk),
         .rst(rst),
-        .A(30'd0),
+        .A(A),
         .B(B),
-        .D(D),
-        // .B(18'd0),
-        // .D(27'd0),
+        .D(27'd0),
         .C(C),
         .PCIN(PCIN),
         .ALUMODE(4'b0000),     // Z + W + X + Y + CIN
-        .INMODE(5'b10101),     // M = D * B
+        .INMODE(5'b00000),     // M = D * B
         .OPMODE(9'b110010101), // XY = M, W = C, Z = PCIN
         .P(P)
     );
