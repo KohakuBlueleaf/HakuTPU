@@ -58,7 +58,8 @@ PCreg1 -> PCreg2 -> PCIN ___/
 ID   -----> reg1 -----> reg2 ======> ID wire
 ```
 
-**Note**: It is unclear that if we need Preg in the pipelining, but based 
+**Note**: It is unclear that if we need Preg in the pipelining, but based on my understanding, the Preg can be seen as "write back stage", which means if we connect the Output wire to some reg directly we can ignore it.
+**Note2**: If we use full pipeline we mentioned here, we can achieve around 800, 700, 600MHz in FP8VectorMul unit in speedgrade -3, -2, -1(-2 LE).
 
 ### FP8 mul
 
