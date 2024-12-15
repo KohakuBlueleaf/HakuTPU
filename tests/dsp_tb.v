@@ -4,37 +4,27 @@
 module DSP48E2_example_tb;
   reg clk;
   reg rst;
-  reg signed [29:0] A;
-  reg signed [17:0] B;
+  reg signed [47:0] AB;
   reg signed [47:0] C;
-  reg signed [26:0] D;
-  reg signed [47:0] PCIN;
   wire signed [47:0] P;
-  wire signed [47:0] PCOUT;
-  wire signed [29:0] ACOUT;
-  wire signed [17:0] BCOUT;
 
   DSP #(
     .INPUTREG(1),
     .OUTPUTREG(1),
-    .DSPPIPEREG(1),
-    .CONTROLREG(1)
-  )unit (
+    .DSPPIPEREG(0),
+    .CONTROLREG(0),
+    .NEEDPREADDER(0)
+  ) Expodsp(
     .enable(1'b1),
     .clk(clk),
     .rst(rst),
-    .A(A),
-    .B(B),
+    .A(AB[47:18]),
+    .B(AB[17:0]),
     .C(C),
-    .D(D),
-    .PCIN(PCIN),
-    .ALUMODE(4'b0000),
-    .INMODE(5'b10101),
-    .OPMODE(9'b110010101), // (A+D) * B + C + PCIN
-    .P(P),
-    .PCOUT(PCOUT),
-    .ACOUT(ACOUT),
-    .BCOUT(BCOUT)
+    .ALUMODE(4'b0000),     // Z + W + X + Y + CIN
+    .INMODE(5'b00000),     // M = A * B
+    .OPMODE(9'b110000011), // X = A:B, Y = 0, W = C, Z = 0
+    .P(P)
   );
 
   initial begin
@@ -49,33 +39,24 @@ module DSP48E2_example_tb;
   end
 
   initial begin
-    A = 30'd0;
-    B = 18'd0;
+    AB = 48'd0;
     C = 48'd0;
-    D = 27'd0;
-    PCIN = 48'd0;
     #20;
-    A = 30'd1;
-    B = 18'd1;
-    C = 48'd1;
-    D = 27'd1;
-    PCIN = 48'd1;
+    AB = 48'd1;
+    C = 48'd2;
     #20;
-    A = 30'd2;
-    B = 18'd3;
+    AB = 48'd3;
     C = 48'd4;
-    D = 27'd5;
-    PCIN = 48'd6;
     #20;
     $finish;
   end
 
   initial begin
     $monitor(
-      "Time = %0d, A = %0d, B = %0d, C = %0d , D = %0d, PCIN = %0d, P = %0d", 
-      $time, A, B, C, D, PCIN, P//, PCOUT, ACOUT, BCOUT
+      "Time = %0d, AB = %0d, C = %0d, P = %0d", 
+      $time, AB, C, P
     );
-    $dumpfile("dump.vcd");
+    // $dumpfile("dump.vcd");
     $dumpvars(0, DSP48E2_example_tb);
   end
 
