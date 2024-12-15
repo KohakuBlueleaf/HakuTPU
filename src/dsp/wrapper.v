@@ -2,7 +2,8 @@ module DSP # (
     parameter integer INPUTREG = 1,
     parameter integer OUTPUTREG = 1,
     parameter integer DSPPIPEREG = 1,
-    parameter integer CONTROLREG = 1
+    parameter integer CONTROLREG = 1,
+    parameter integer NEEDPREADDER = 1
 )(
     input clk,
     input rst,
@@ -21,7 +22,7 @@ module DSP # (
     output signed [17:0] BCOUT
 );
     DSP48E2 #(
-        .AMULTSEL("AD"),
+        .AMULTSEL(NEEDPREADDER ? "AD" : "A"),
         .AREG(INPUTREG),
         .ACASCREG(INPUTREG),
         .BREG(INPUTREG),

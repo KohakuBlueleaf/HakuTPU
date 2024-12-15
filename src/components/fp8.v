@@ -43,14 +43,15 @@ module FP8VectorMul (
         .INPUTREG(0),
         .OUTPUTREG(0),
         .DSPPIPEREG(0),
-        .CONTROLREG(0)
+        .CONTROLREG(0),
+        .NEEDPREADDER(0)
     ) dsp(
         .enable(1'b1),
         .clk(clk),
         .rst(rst),
         .A(A),
         .B(B),
-        .D(27'd0),
+        // .D(27'd0),
         .C(C),
         .PCIN(PCIN),
         .ALUMODE(4'b0000),     // Z + W + X + Y + CIN
