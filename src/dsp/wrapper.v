@@ -1,4 +1,9 @@
-module DSP(
+module DSP # (
+    parameter integer INPUTREG = 1,
+    parameter integer OUTPUTREG = 1,
+    parameter integer DSPPIPEREG = 1,
+    parameter integer CONTROLREG = 1
+)(
     input clk,
     input rst,
     input enable,
@@ -17,15 +22,18 @@ module DSP(
 );
     DSP48E2 #(
         .AMULTSEL("AD"),
-        .AREG(1),
-        .ACASCREG(1),
-        .BREG(1),
-        .BCASCREG(1),
-        .MREG(0),
-        .ADREG(0),
-        .CREG(1),
-        .DREG(1),
-        .PREG(0)
+        .AREG(INPUTREG),
+        .ACASCREG(INPUTREG),
+        .BREG(INPUTREG),
+        .BCASCREG(INPUTREG),
+        .MREG(DSPPIPEREG),
+        .ADREG(DSPPIPEREG),
+        .CREG(INPUTREG),
+        .DREG(INPUTREG),
+        .PREG(OUTPUTREG),
+        .INMODEREG(CONTROLREG),
+        .OPMODEREG(CONTROLREG),
+        .ALUMODEREG(CONTROLREG)
     ) dsp_unit (
         .RSTA(rst),
         .RSTALLCARRYIN(rst),

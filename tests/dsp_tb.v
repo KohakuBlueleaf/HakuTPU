@@ -14,7 +14,12 @@ module DSP48E2_example_tb;
   wire signed [29:0] ACOUT;
   wire signed [17:0] BCOUT;
 
-  DSP unit (
+  DSP #(
+    .INPUTREG(1),
+    .OUTPUTREG(1),
+    .DSPPIPEREG(1),
+    .CONTROLREG(1)
+  )unit (
     .enable(1'b1),
     .clk(clk),
     .rst(rst),
