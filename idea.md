@@ -7,8 +7,9 @@ This documentation will have all the design idea in this project.
 For DSP48E1, we can't do M + C + PCIN in one pass, need to move more addition outside the DSP.
 But the basic idea about use multiplier and alu for 4fp8 mul in one pass is same.
 
-We will basically only use this operation (xx) stands for bit count:
-(A(27) + D(27)) * B(18) + C(48) = output
+We will basically only use this operation:
+(A(27) + D(27)) * B(18) + C(48) + PCIN(48) = output
+Where (xx) stands for bit count
 
 ### Pipeline
 
@@ -71,8 +72,8 @@ S1 xor S2 -> neg or pos
 E1 + E2 -> new Exponent
 1.M1 * 1.M2 -> new Mantissa
 
-About mantissa
-
+About mantissa, we use DSP48E2 to do the multiplication of mantissa than add the prefix 1 into it.
+So it will be: `(1 + Ma) * (1 + Mb) = 1 + Ma + Mb + MaMb`
 ```
     0.111
 *   0.111
