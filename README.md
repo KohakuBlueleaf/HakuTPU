@@ -7,3 +7,13 @@ This project based on Xilinx Ultrascale+ FPGA's, utilize their DSP48E2 tile to d
 This project is more for fun, not for real usage. But if anyone have interests to make it work, feel free to open PR.
 
 ## Introduction
+
+### Fundamental Components
+
+* FP8VectorMul:
+  * Input:
+    * Design1: q, a, b, c, d (FP8 E5M2/E4M3)
+  * output:
+    * Design1: qa, qb, qc, qd (FP16)
+  * resource cost:
+    * Design 1: 105 LUT, 118 FF, 1DSP
