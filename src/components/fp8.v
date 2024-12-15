@@ -1,15 +1,16 @@
-module FP8VectorMulPipe1Design1 #(
-    parameter integer ID_WIDTH = 4
-) (
+module FP8VectorMulPipe1Design1 (
     input clk,
     input rst,
     input e5m2mode,
+    input in_valid,
     input [7:0] q,
     input [31:0] vec,
-    input [ID_WIDTH-1:0] id,
 
-    output [63:0] res,
-    output reg [ID_WIDTH-1:0] id_out
+    output [15:0] qa,
+    output [15:0] qb,
+    output [15:0] qc,
+    output [15:0] qd,
+    output reg out_valid
 );
     // Input Part
     wire [7:0] a;
@@ -38,15 +39,15 @@ module FP8VectorMulPipe1Design1 #(
                 ? {26'b0, d[1:0], 4'b0, c[1:0], 4'b0, b[1:0], 4'b0, a[1:0], 2'b0}
                 : {18'b0, d[2:0], 5'b0, c[2:0], 5'b0, b[2:0], 5'b0, a[2:0], 3'b0};
 
-    reg [ID_WIDTH-1:0] id_reg1;
-    reg [ID_WIDTH-1:0] id_reg2;
+    reg out_valid_reg1;
+    reg out_valid_reg2;
 
     always @(posedge clk) begin
         if (rst) begin
             Creg1 <= 48'b0;
-            id_reg1 <= 0;
-            id_reg2 <= 0;
-            id_out <= 0;
+            out_valid_reg1 <= 0;
+            out_valid_reg2 <= 0;
+            out_valid <= 0;
             a_reg1 <= 0;
             a_reg2 <= 0;
             a_reg3 <= 0;
@@ -64,9 +65,9 @@ module FP8VectorMulPipe1Design1 #(
             q_reg3 <= 0;
         end else begin
             Creg1 <= C;
-            id_reg1 <= id;
-            id_reg2 <= id_reg1;
-            id_out <= id_reg2;
+            out_valid_reg1 <= in_valid;
+            out_valid_reg2 <= out_valid_reg1;
+            out_valid <= out_valid_reg2;
             a_reg1 <= a;
             a_reg2 <= a_reg1;
             a_reg3 <= a_reg2;
@@ -110,10 +111,14 @@ module FP8VectorMulPipe1Design1 #(
     );
 
     // Output Part
-    wire [15:0] qa;
-    wire [15:0] qb;
-    wire [15:0] qc;
-    wire [15:0] qd;
+    reg qa_of;
+    reg qb_of;
+    reg qc_of;
+    reg qd_of;
+    reg qa_sign;
+    reg qb_sign;
+    reg qc_sign;
+    reg qd_sign;
     reg [5:0] qa_exp;
     reg [5:0] qb_exp;
     reg [5:0] qc_exp;
@@ -142,6 +147,10 @@ module FP8VectorMulPipe1Design1 #(
     end
 
     always @(*) begin
+        qa_sign = q_reg3[7] ^ a_reg3[7];
+        qb_sign = q_reg3[7] ^ b_reg3[7];
+        qc_sign = q_reg3[7] ^ c_reg3[7];
+        qd_sign = q_reg3[7] ^ d_reg3[7];
         if (e5m2mode) begin
             qa_mant = P[5:0];
             qb_mant = P[11:6];
@@ -157,11 +166,10 @@ module FP8VectorMulPipe1Design1 #(
         qb_exp = qb_exp_reg + qb_mant[7];
         qc_exp = qc_exp_reg + qc_mant[7];
         qd_exp = qd_exp_reg + qd_mant[7];
-
-        qa_exp[4:0] = qa_exp[5] ? 5'b11111:qa_exp[4:0];
-        qb_exp[4:0] = qb_exp[5] ? 5'b11111:qb_exp[4:0];
-        qc_exp[4:0] = qc_exp[5] ? 5'b11111:qc_exp[4:0];
-        qd_exp[4:0] = qd_exp[5] ? 5'b11111:qd_exp[4:0];
+        qa_of = qa_exp[5] | qa_exp[4:0] == 5'b11111;
+        qb_of = qb_exp[5] | qb_exp[4:0] == 5'b11111;
+        qc_of = qc_exp[5] | qc_exp[4:0] == 5'b11111;
+        qd_of = qd_exp[5] | qd_exp[4:0] == 5'b11111;
 
         qa_mant = qa_mant[7] ? {qa_mant[6:0], 1'b0} : {qa_mant[5:0], 2'b00};
         qb_mant = qb_mant[7] ? {qb_mant[6:0], 1'b0} : {qb_mant[5:0], 2'b00};
@@ -169,10 +177,8 @@ module FP8VectorMulPipe1Design1 #(
         qd_mant = qd_mant[7] ? {qd_mant[6:0], 1'b0} : {qd_mant[5:0], 2'b00};
     end
 
-    assign qa = {q_reg3[7] ^ a_reg3[7], qa_exp[4:0], qa_mant, 2'b00};
-    assign qb = {q_reg3[7] ^ b_reg3[7], qb_exp[4:0], qb_mant, 2'b00};
-    assign qc = {q_reg3[7] ^ c_reg3[7], qc_exp[4:0], qc_mant, 2'b00};
-    assign qd = {q_reg3[7] ^ d_reg3[7], qd_exp[4:0], qd_mant, 2'b00};
-
-    assign res = {qd, qc, qb, qa};
+    assign qa = qa_of ? {qa_sign, 5'b11111, 10'b0} : {qa_sign, qa_exp[4:0], qa_mant, 2'b00};
+    assign qb = qb_of ? {qb_sign, 5'b11111, 10'b0} : {qb_sign, qb_exp[4:0], qb_mant, 2'b00};
+    assign qc = qc_of ? {qc_sign, 5'b11111, 10'b0} : {qc_sign, qc_exp[4:0], qc_mant, 2'b00};
+    assign qd = qd_of ? {qd_sign, 5'b11111, 10'b0} : {qd_sign, qd_exp[4:0], qd_mant, 2'b00};
 endmodule
