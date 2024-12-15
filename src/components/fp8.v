@@ -1,4 +1,4 @@
-module FP8VectorMulPipe1Design1 (
+module FP8VectorMul1 (
     input clk,
     input rst,
     input e5m2mode,
@@ -179,7 +179,7 @@ module FP8VectorMulPipe1Design1 (
 endmodule
 
 
-module FP8VectorMulPipe1Design2 (
+module FP8VectorMul2 (
     input clk,
     input rst,
     input e5m2mode,
@@ -263,7 +263,7 @@ module FP8VectorMulPipe1Design2 (
         .DSPPIPEREG(1),
         .CONTROLREG(0),
         .NEEDPREADDER(0)
-    ) Mantdsp(
+    ) MantDSP (
         .enable(1'b1),
         .clk(clk),
         .rst(rst),
@@ -281,7 +281,7 @@ module FP8VectorMulPipe1Design2 (
         .DSPPIPEREG(1),
         .CONTROLREG(0),
         .NEEDPREADDER(0)
-    ) Expodsp(
+    ) ExpoDSP (
         .enable(1'b1),
         .clk(clk),
         .rst(rst),
@@ -352,12 +352,12 @@ module FP8VectorMulPipe1Design2 (
 
     always @(*) begin
         if (e5m2mode) begin
-            qa_mant[7:2] = MantP[39:34];
-            qb_mant[7:2] = MantP[33:28];
-            qc_mant[7:2] = MantP[27:22];
-            ka_mant[7:2] = MantP[17:12];
-            kb_mant[7:2] = MantP[11:6];
-            kc_mant[7:2] = MantP[5:0];
+            qa_mant = {MantP[39:34], 2'b0};
+            qb_mant = {MantP[33:28], 2'b0};
+            qc_mant = {MantP[27:22], 2'b0};
+            ka_mant = {MantP[17:12], 2'b0};
+            kb_mant = {MantP[11:6 ], 2'b0};
+            kc_mant = {MantP[5 :0 ], 2'b0};
         end else begin
             qa_mant = {1'b0, MantP[44:38]};
             qb_mant = {1'b0, MantP[37:31]};

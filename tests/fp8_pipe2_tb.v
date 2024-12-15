@@ -47,7 +47,7 @@ module FP8VectorMulPipe2_tb;
         end
     end
 
-    FP8VectorMulPipe1Design2 fp8 (
+    FP8VectorMul2 fp8 (
         .clk(clk),
         .rst(rst),
         .e5m2mode(1'b0),
