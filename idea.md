@@ -143,10 +143,8 @@ First DSP:
 1mmm0001mmm0001mmm                                  B(18): mantissa from a, b, c
 *
 000mmm000000000000000000000mmm                      A(30): mantissa from q, k
-+
-000000000000000000000000000000000000000000000000    C(48)
 =
-000000mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm    B*A: [1.aaa, 1.bbb, 1.ccc] x [0.qqq, 0.kkk]
+000mmmmmmmmmmmmmmmmmmmmm000mmmmmmmmmmmmmmmmmmmmm    B*A: [1.aaa, 1.bbb, 1.ccc] x [0.qqq, 0.kkk]
 
 Second DSP:
 0s0s0s0s0s0s0000000eeee0eeee0eeee0eeee0eeee0eeee    A:B (30:18): exponent [a, b, c, , a, b, c]

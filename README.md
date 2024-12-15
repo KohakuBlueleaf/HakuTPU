@@ -16,7 +16,7 @@ This project is more for fun, not for real usage. But if anyone have interests t
     * Design2: q, k, a, b, c (FP8 E5M2/E4M3)
   * output:
     * Design1: qa, qb, qc, qd (FP16)
-    * Design2: qa, qb, qc, ka, kb, kc
+    * Design2: qa, qb, qc, ka, kb, kc (FP16)
   * resource cost:
     * Design 1: 105 LUT, 118 FF, 1DSP
-    * Design 2: [TODO]
+    * Design 2: 150 LUT, 72 FF, 2DSP
