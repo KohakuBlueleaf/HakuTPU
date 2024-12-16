@@ -26,13 +26,23 @@ module FP8VectorMul1 (
     wire [47:0] C; reg [47:0] Creg1;
     wire [47:0] P;
     wire [29:0] A;
-    assign B = e5m2mode ? {16'b1, q[1:0]} : {15'b1, q[2:0]};
+    //remember to handle subnormal numbers
+    assign B = e5m2mode ? {15'b0, q[6:2]!=0, q[1:0]} : {14'b0, q[6:3]!=0, q[2:0]};
     assign A = e5m2mode 
                 ? {10'b0, d[1:0], 4'b0, c[1:0], 4'b0, b[1:0], 4'b0, a[1:0]} 
                 : { 3'b0, d[2:0], 5'b0, c[2:0], 5'b0, b[2:0], 5'b0, a[2:0]} ;
     assign C = e5m2mode
-                ? {26'b0, d[1:0], 4'b0, c[1:0], 4'b0, b[1:0], 4'b0, a[1:0], 2'b0}
-                : {18'b0, d[2:0], 5'b0, c[2:0], 5'b0, b[2:0], 5'b0, a[2:0], 3'b0};
+                ? {
+                    26'b0, d[6:2]==0 ? 5'b0 : d[1:0], 
+                    4'b0,  c[6:2]==0 ? 5'b0 : c[1:0], 
+                    4'b0,  b[6:2]==0 ? 5'b0 : b[1:0], 
+                    4'b0,  a[6:2]==0 ? 5'b0 : a[1:0], 2'b0
+                }: {
+                    18'b0, d[6:3]==0 ? 4'b0 : d[2:0], 
+                    5'b0,  c[6:3]==0 ? 4'b0 : c[2:0], 
+                    5'b0,  b[6:3]==0 ? 4'b0 : b[2:0], 
+                    5'b0,  a[6:3]==0 ? 4'b0 : a[2:0], 3'b0
+                };
 
     reg out_valid_reg1;
     reg out_valid_reg2;
@@ -207,10 +217,10 @@ module FP8VectorMul2 (
     wire [29:0] MantA;
     wire [47:0] MantP;
     assign MantB = e5m2mode 
-                ? {5'b00001, a[1:0], 3'b001, b[1:0], 3'b001, c[1:0]}
-                : {1'b1, a[2:0], 4'b0001, b[2:0], 4'b0001, c[2:0]};
+                ? {4'b0000, a[6:2]!=0, a[1:0], 2'b00, b[6:2]!=0, b[1:0], 2'b00, c[6:2]!=0, c[1:0]}
+                : {a[6:2]!=0, a[2:0], 3'b000, b[6:2]!=0, b[2:0], 3'b000, c[6:2]!=0, c[2:0]};
     assign MantA = e5m2mode 
-                ? { 4'b1, q[1:0], 22'b1, k[1:0]}
+                ? { 3'b0, q[6:2]!=0, q[1:0], 21'b0, k[6:2]!=0, k[1:0]}
                 : { 3'b0, q[2:0], 21'b0, k[2:0]};
 
     wire [47:0] ExpoAB;
@@ -366,12 +376,18 @@ module FP8VectorMul2 (
             kb_mant = {1'b0, MantP[13:7 ]};
             kc_mant = {1'b0, MantP[6 :0 ]};
             
-            qa_mant[7:3] = qa_mant[7:3] + a_reg3[2:0];
-            qb_mant[7:3] = qb_mant[7:3] + b_reg3[2:0];
-            qc_mant[7:3] = qc_mant[7:3] + c_reg3[2:0];
-            ka_mant[7:3] = ka_mant[7:3] + a_reg3[2:0];
-            kb_mant[7:3] = kb_mant[7:3] + b_reg3[2:0];
-            kc_mant[7:3] = kc_mant[7:3] + c_reg3[2:0];
+            if (a_reg3[6:3]>0) begin
+                qa_mant[7:3] = qa_mant[7:3] + a_reg3[2:0];
+                ka_mant[7:3] = ka_mant[7:3] + a_reg3[2:0];
+            end
+            if (b_reg3[6:3]>0) begin
+                qb_mant[7:3] = qb_mant[7:3] + b_reg3[2:0];
+                kb_mant[7:3] = kb_mant[7:3] + b_reg3[2:0];
+            end
+            if (c_reg3[6:3]>0) begin
+                qc_mant[7:3] = qc_mant[7:3] + c_reg3[2:0];
+                kc_mant[7:3] = kc_mant[7:3] + c_reg3[2:0];
+            end
         end
         qa_exp = qa_exp_reg + qa_mant[7];
         qb_exp = qb_exp_reg + qb_mant[7];
