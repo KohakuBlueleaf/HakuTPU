@@ -11,7 +11,7 @@ module DSP48E2_example_tb;
   DSP #(
     .INPUTREG(1),
     .OUTPUTREG(1),
-    .DSPPIPEREG(0),
+    .DSPPIPEREG(1),
     .CONTROLREG(0),
     .NEEDPREADDER(0)
   ) Expodsp(
