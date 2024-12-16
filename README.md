@@ -54,5 +54,5 @@ And you will find the LUT cost is very high and you will run out of it easily. T
 #### Vectorized ALU
 
 Basically just a bunch of ALU which can do one cycle FMA and maybe more one cycle things.
-Since we only use 4k~6k DSPs in our Tensor Core. We plan to use 2~4 DSPs per ALU to achieve totally 1024~2048 ALU here.
-(Based on Nvidia's marketing form, you can say our project will eventually have 1024~2048 CUDA cores and 128~192 Tensor cores).
+Since we only use 4k\~6k DSPs in our Tensor Core. We plan to use 2\~4 DSPs per ALU to achieve totally 1024\~2048 ALU here.
+(Based on Nvidia's marketing form, you can say our project will eventually have 1024\~2048 CUDA cores and 128~192 Tensor cores).
