@@ -203,16 +203,28 @@ No much trick... only brute force.
 
 For FP16 division a/b, we decide to use FP12 inverse: inv(a) = 1/a with FP16 FMA unit to achieve it.
 
-In division, we have `x = 2^e * 1.mmmmmm, 1/x = 2^-e * 1/1.mmmmmm`. Since the inverse of 1.mmmmmm is between 0.5-1.0 in decimal, which means it will be 0.1xxxx as result. (if mmmmmm==0, directly return 1 for this part). Basically the result of 1/1.mmmmmm is a 6bit to 5bit function and we can direclty hardcoded 5 LUT for this logic.
+In division, we have `x = 2^e * 1.mmmmmm, 1/x = 2^-e * 1/1.mmmmmm`. Since the inverse of 1.mmmmmm is between 0.5-1.0 in decimal, which means it will be 0.1xxxx as result. (if mmmmmm==0, directly return 1 for this part). Basically the result of 1/1.mmmmmm is a 6bit to 10bit function and we can direclty hardcoded 10 LUT for this logic.
 
 Therefore, we know the result will be: `new_e = -e-(m!=0), new_m = 1.xxxxx`, where xxxxx is the LUT result.
+
+For subnormal number, we have `x = 0.mmmmmm`, which can be seen as 6 to 15(sign is original x sign) function, so need extra 15 LUT for it.
+
+totally we need 10 + 15 = 25 LUT for inverse mapping
 
 ### Log
 
 For log (specifically, log_e() here), we have `log(x) = e * log(2) + log(1.mmmmmm)`. Where e*log(2) and log(1.mmmmmm) are both FP16.
 
-We know log(1.mmmmmm) is within [1, 2), so we can take it as 6input 10output function, which need 10 LUT6, and e*log(2) is 5input 16output function, since each LUT6 in xilinx7 series is actually 2 LUT5 with mux, we can only use 8LUT6 to achieve 5input 16 output application.
+We know log(1.mmmmmm) is positive so it is 6input 15output function, which need 15 LUT6, and e*log(2) is 5input 16output function, since each LUT6 in xilinx7 series is actually 2 LUT5 with mux, we can only use 8LUT6 to achieve 5input 16 output application.
+
+for subnormal number, we have `log(x) = log(0.mmmmmm)`, which need another 15LUT (we know it will be negative, and NaN for 0).
+
+totally we need 15 + 8 + 15 = 38 LUT for log mapping
 
 ### EXP
 
-WIP
+For exponential `e^x`, we have `exp(x) = exp(seeeee) * exp(1.mmmmmm)`, where `exp(seeeee)` is 6input 15output(positive) and `exp(1.mmmmmm)` is 6input 11output (since the exp(1) = 2.x and exp(2) = 7.x, the exponent part should definitely be 1 or 2 and you only need 1 bit to determine it).
+
+for subnormal number, we have `e * exp(0.mmmmmm)` (or `exp(0.mmmmmm)/e`) where `exp(0.mmmmmm)` is another 6input 11output, since exp(0) = 1 and exp(1) = 2, the exponent should be 0 or 1.
+
+Totally we need 15 + 11 + 11 = 37 LUT for exp mapping.
