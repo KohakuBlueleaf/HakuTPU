@@ -134,6 +134,8 @@ Exponent Addition (6bit addition * 4)
 exponent + 1 (if final mantissa > 2, 6bit addition * 4)
 ```
 
+**Note**: Use additional DSP for Exponent Additions can save LUTs (if you need)
+
 
 #### Design 2: Use 2 DSP to achieve `[a, b, c].dot([q, k].T)`
 
