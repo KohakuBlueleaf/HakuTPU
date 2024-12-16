@@ -97,6 +97,7 @@ So it will be: `(1 + Ma) * (1 + Mb) = 1 + Ma + Mb + MaMb`
 ```
 
 #### Design1: Use 1 DSP to achieve q * [a, b, c, d]
+
 ```
 000000000000001mmm                                  B(18): mantissa 1.qqq
 *
@@ -116,6 +117,7 @@ exponent + 1 (if final mantissa > 2, 6bit addition * 4)
 ```
 
 Consider E5M2, it will be
+
 ```
 0000000000000001mm                                  B(18): mantissa 1.qqq
 *
@@ -136,10 +138,10 @@ exponent + 1 (if final mantissa > 2, 6bit addition * 4)
 
 **Note**: Use additional DSP for Exponent Additions can save LUTs (if you need)
 
-
 #### Design 2: Use 2 DSP to achieve `[a, b, c].dot([q, k].T)`
 
 FP8 E4M3
+
 ```
 First DSP:
 1mmm0001mmm0001mmm                                  B(18): mantissa from a, b, c
@@ -163,6 +165,7 @@ exponent + 1 (if final mantissa > 2, 6bit addition * 6)
 ```
 
 FP8 E5M2
+
 ```
 First DSP:
 00001mm0001mm001mm                                  B(18): mantissa from a, b, c
@@ -184,7 +187,6 @@ Extra Arithmetic Operation in LUT:
 exponent + 1 (if final mantissa > 2, 6bit addition * 6)
 ```
 
-
 ### FP16 Accumulation
 
 The addition between floating point number is basically shift + integer addition.
@@ -194,3 +196,23 @@ Which means for FP16 it will be addition between 5bit integer (for how many bit 
 Therefore, we can put the exponent addition in LUT than use DSP for 10bit addition.
 Which means we can do [a, b, c, d] + [q, k, v, m] = [a+q, b+k, c+v, d+m] with only 1 DSP.
 (DSP48 support 48bit addition within one cycle, and 10bit + 10bit = 11bit)
+
+No much trick... only brute force.
+
+### Division
+
+For FP16 division a/b, we decide to use FP12 inverse: inv(a) = 1/a with FP16 FMA unit to achieve it.
+
+In division, we have `x = 2^e * 1.mmmmmm, 1/x = 2^-e * 1/1.mmmmmm`. Since the inverse of 1.mmmmmm is between 0.5-1.0 in decimal, which means it will be 0.1xxxx as result. (if mmmmmm==0, directly return 1 for this part). Basically the result of 1/1.mmmmmm is a 6bit to 5bit function and we can direclty hardcoded 5 LUT for this logic.
+
+Therefore, we know the result will be: `new_e = -e-(m!=0), new_m = 1.xxxxx`, where xxxxx is the LUT result.
+
+### Log
+
+For log (specifically, log_e() here), we have `log(x) = e * log(2) + log(1.mmmmmm)`. Where e*log(2) and log(1.mmmmmm) are both FP16.
+
+We know log(1.mmmmmm) is within [1, 2), so we can take it as 6input 10output function, which need 10 LUT6, and e*log(2) is 5input 16output function, since each LUT6 in xilinx7 series is actually 2 LUT5 with mux, we can only use 8LUT6 to achieve 5input 16 output application.
+
+### EXP
+
+WIP
