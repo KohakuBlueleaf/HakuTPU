@@ -13,36 +13,29 @@ Which have 1728k LUTs, 3456K FFs and 12288 DSPs.
 
 ### Fundamental Components
 
-* FP8VectorMul:
+* [ ] Global Controller
+* [ ] Unit Controller
+* [ ] 128x16bit buffer
+* [ ] Tensor Core: 4x4x4 FP8 mul FP12 accu
 
-  * Input:
-    * Design1: q, a, b, c, d (FP8 E5M2/E4M3)
-    * Design2: q, k, a, b, c (FP8 E5M2/E4M3)
-  * output:
-    * Design1: qa, qb, qc, qd (FP16)
-    * Design2: qa, qb, qc, ka, kb, kc (FP16)
-  * resource cost:
-    * Design 1: 123 LUT, 118 FF, 1 DSP
-    * Design 2: 163 LUT, 108 FF, 2 DSP
-  * performance:
-    * 3-cycle latency, 1-cycle throughput
-* FPVectorAdd (can customize Exponent and Mantissa)
+  * [X] 16 x 1x4 FP8VectorMul
+  * [X] 16 x 4+4 FPaddition
+* [ ] FP16 ALU
 
-  * Input:
-    * a1, b1, c1, d1, a2, b2, c2, d2
-  * Output:
-    * a1+a2, b1+b2, c1+c2, d1+d2
-  * resource cost:
-    * E5M4 (FP10) : 269 LUT, 70 FF, 1 DSP
-    * E5M6 (FP12) : 336 LUT, 78 FF, 1 DSP
-    * E5M10 (FP16) : 535 LUT, 94 FF, 1 DSP
-  * performance:
-    * 1-cycle latency, 1-cycle throughput
-* FPALU (can customize Exponent and Mantissa)
+  * [ ] efficient FP16 FMA
+  * [X] FP12 inversion
+  * [ ] FP12 exp/log
+* [ ] General Processor
 
-  * WIP
+  * [ ] FP32
 
 ### Compute Unit
+
+Each compute unit have following components
+
+* Unit Controller
+* Tensor Core
+* FP16 ALU * 8
 
 #### Tensor Core
 
