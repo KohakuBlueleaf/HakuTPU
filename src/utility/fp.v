@@ -3,7 +3,8 @@ module float_display #(
     parameter EXP_BITS = 8,    // Number of exponent bits
     parameter MANT_BITS = 23   // Number of mantissa bits
 )(
-    input [EXP_BITS+MANT_BITS:0] float_num  // Input floating point number (sign + exp + mant)
+    input [EXP_BITS+MANT_BITS:0] float_num,  // Input floating point number (sign + exp + mant)
+    output reg [63:0] decoded                 // Output decoded number
 );
     localparam BIAS = (1 << (EXP_BITS-1)) - 1;
 
@@ -38,10 +39,13 @@ module float_display #(
         end
         else if (exponent == {EXP_BITS{1'b1}}) begin
             // Infinity or NaN
-            if (mantissa == 0)
+            if (mantissa == 0) begin
+                decoded_num = $bitstoreal({sign, 11'b11111111111, 52'b0});
                 $display("%s: %sInfinity (%b)", prefix, sign ? "-" : "+", float_num);
-            else
+            end else begin
+                decoded_num = $bitstoreal(-64'b1);
                 $display("%s: NaN (%b)", prefix, float_num);
+            end
         end
         else begin
             // Normal number
@@ -50,6 +54,7 @@ module float_display #(
             if (sign) decoded_num = -decoded_num;
             $display("%s: %g (%b)", prefix, decoded_num, float_num);
         end
+        decoded = $realtobits(decoded_num);
     end
     
 endmodule

@@ -5,10 +5,12 @@ module FP12Inverse (
     // input FP12 (E5M6) a;
     // output FP16 (E5M10) 1/a;
     // implement by LUT6_2 directly
-    // a = 2^e * 1.m, 1/a = 2^-e * 1/(1.m), where 1.m is 6bit input 10bit output
+    // a = 2^e * 1.m, 1/a = 2^-e * 1/(1.m), where 1/(1.m) is 6bit input 10bit output
     // real_e = e-15, -real_e = (-e + 30) - 15, final_e = -e + 30
     // if e!=0, mantissa = 1.m, 1/1.m = (0.5, 1], which means we need shift in exponent
     // therefore, if e!=0 and mantissa!=0, we need to minus 1 in exponent
+    // NOTE: in this module we didn't handled 1/inf and 1/NaN, 
+    //       they should be handled by ALU design directly
     wire sign = a[11];
     wire [4:0] exp = a[10:6];
     wire [5:0] mant = a[5:0];
@@ -59,8 +61,12 @@ module FP12Inverse (
     );
 
     always @(*) begin
-        if(exp==5'd0) begin
+        if(exp==5'b00000) begin
             b = {sign, 4'b1111, subnorm_out};
+        end else if(exp==5'b11101) begin
+            b = {sign, 6'b1, mant_out[9:1]};
+        end else if (exp==5'b11110) begin
+            b = {sign, 7'b1, mant_out[9:2]};
         end else begin
             b = {sign, -exp + 5'd29 + mant_out[10], mant_out[9:0]};
         end
