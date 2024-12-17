@@ -203,13 +203,15 @@ No much trick... only brute force.
 
 For FP16 division a/b, we decide to use FP12 inverse: inv(a) = 1/a with FP16 FMA unit to achieve it.
 
-In division, we have `x = 2^e * 1.mmmmmm, 1/x = 2^-e * 1/1.mmmmmm`. Since the inverse of 1.mmmmmm is between 0.5-1.0 in decimal, which means it will be 0.1xxxx as result. (if mmmmmm==0, directly return 1 for this part). Basically the result of 1/1.mmmmmm is a 6bit to 10bit function and we can direclty hardcoded 10 LUT for this logic.
+In division, we have `x = 2^e * 1.mmmmmm, 1/x = 2^-e * 1/1.mmmmmm`. Since the inverse of 1.mmmmmm is between 0.5-1.0 in decimal, which means it will be 0.1xxxx or 1.0 as result.. Basically the result of 1/1.mmmmmm is a 6bit to 11bit function and we can direclty hardcoded 11 LUT for this logic.
 
 Therefore, we know the result will be: `new_e = -e-(m!=0), new_m = 1.xxxxx`, where xxxxx is the LUT result.
 
-For subnormal number, we have `x = 0.mmmmmm`, which can be seen as 6 to 15(sign is original x sign) function, so need extra 15 LUT for it.
+For subnormal number, we have `x = 0.mmmmmm`, which can be seen as 6 to 11(sign is original x sign) function, so need extra 11 LUT for it.
 
-totally we need 10 + 15 = 25 LUT for inverse mapping
+and for exp process, it will be -exp+29+result_mant[10] (to see if 1/1.xxxxx = 1.0). which is actulaly 6input 5output (5bit exp + 1bit mant[10], output 5bit exp). So it need other 5 LUT.
+
+totally we need at least 11 + 11 + 5 = 27 LUT for inverse mapping. The real LUT cost here is around 30.
 
 ### Log
 

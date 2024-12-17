@@ -108,11 +108,32 @@ def generate_inverse_lut(
         # Convert i to FP12 number (1.mmm format)
         input_val = 1.0 + (i / (1 << input_bits))
         inv_val = 1.0 / input_val
-        print(input_val, i, inv_val)
 
         # Convert result to output format
         fp_result = FPNumber.from_float(inv_val, output_exp_bits, output_man_bits)
-        print(fp_result.to_float(), inv_val)
+        lut[i] = fp_result.to_bits()
+
+    return lut
+
+
+def generate_inverse_lut_subnormal(
+    input_exp_bits: int, input_man_bits: int, output_exp_bits: int, output_man_bits: int
+) -> dict:
+    """Generate LUT for inverse function (1/x), where x have exp=0 and man!=0"""
+    lut = {}
+    input_bits = input_man_bits  # We only need mantissa bits since 0.mmm format
+
+    for i in range(1 << input_bits):
+        # Convert i to FP12 number (0.mmm format)
+        input_val = 2**(0 - 2**(input_exp_bits-1) + 1) * (i / (1 << input_bits))
+        print(i, input_val, 2**(0 - 2**(input_exp_bits-1) + 1), i / (1 << input_bits))
+        if input_val == 0:
+            inv_val = 0
+        else:
+            inv_val = 1.0 / input_val
+
+        # Convert result to output format
+        fp_result = FPNumber.from_float(inv_val, output_exp_bits, output_man_bits)
         lut[i] = fp_result.to_bits()
 
     return lut
@@ -175,6 +196,20 @@ def generate_exp_lut(
 if __name__ == "__main__":
     # Generate inverse LUT (FP12 to FP16)
     inv_lut = generate_inverse_lut(5, 6, 5, 10)  # FP12(E5M6) to FP16
+    results = []
+    for i in range(1 << 6):
+        results.append(f"{inv_lut[i]:016b}")
+        print(f"{inv_lut[i]:016b}: {FPNumber.from_bits(inv_lut[i], 5, 10).to_float()}")
+    for i in zip(*results):
+        print("".join(reversed(list(i))))
+
+    invlut_subnorm = generate_inverse_lut_subnormal(5, 6, 5, 10)
+    results = []
+    for i in range(1 << 6):
+        results.append(f"{invlut_subnorm[i]:016b}")
+        print(f"{invlut_subnorm[i]:016b}: {FPNumber.from_bits(invlut_subnorm[i], 5, 10).to_float()}")
+    for i in zip(*results):
+        print("".join(reversed(list(i))))
 
     # Generate log LUT and log-exp LUT
     # log(x) = log(1.mmmmmm) + e*log(2)
