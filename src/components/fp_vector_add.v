@@ -45,7 +45,7 @@ endmodule
 module FPVectorAdd #(
     // 1,5,6 -> FP12
     parameter EXP_BITS = 5,
-    parameter MANT_BITS = 5
+    parameter MANT_BITS = 6
 ) (
     input clk,
     input rst,
