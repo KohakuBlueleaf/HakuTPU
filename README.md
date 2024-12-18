@@ -16,10 +16,10 @@ Which have 1728k LUTs, 3456K FFs and 12288 DSPs.
 * [ ] Global Controller
 * [ ] Unit Controller
 * [ ] 128x16bit buffer
-* [ ] Tensor Core: 4x4x4 FP8 mul FP12 accu
+* [ ] Tensor Core: 4x8x4 FP8 mul FP12 accu
 
-  * [X] 16 x 1x4 FP8VectorMul
-  * [X] 16 x 4+4 FPaddition
+  * [X] 32 x 1x4 FP8VectorMul
+  * [X] 32 x 4+4 FPaddition
 * [ ] FP16 ALU
 
   * [ ] efficient FP16 FMA
@@ -42,7 +42,7 @@ Each compute unit have following components
 Follow the idea of tensor core in Nvidia Volta arch. We use 4x4x4 gemm as the smallest unit in Tensor Core.
 There for, to achieve 4x4x4 matmul you need 16 FP8VectorMul(design1) and 16 FPVectorAdd(adder tree) to achieve 1cycle pipelined 4x4x4 Tensor Core.
 
-And you will find the LUT cost is very high and you will run out of it easily. Therefore, we consider to use FP10accu/192core, FP12accu/160core or FP16/128core as our setup.
+And you will find the LUT cost is very high and you will run out of it easily. Therefore, we consider to use FP12, 128~192core in our setup.
 
 #### Vectorized ALU
 
