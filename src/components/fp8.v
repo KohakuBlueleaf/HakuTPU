@@ -9,10 +9,10 @@ module FP8VectorMul1 (
     input [7:0] c,
     input [7:0] d,
 
-    output [15:0] qa,
-    output [15:0] qb,
-    output [15:0] qc,
-    output [15:0] qd,
+    output [11:0] qa,
+    output [11:0] qb,
+    output [11:0] qc,
+    output [11:0] qd,
     output reg out_valid
 );
     // Input Part
@@ -182,10 +182,10 @@ module FP8VectorMul1 (
         qd_mant = qd_mant[7] ? {qd_mant[6:0], 1'b0} : {qd_mant[5:0], 2'b00};
     end
 
-    assign qa = qa_of ? {qa_sign, 5'b11111, 10'b0} : {qa_sign, qa_exp[4:0], qa_mant, 2'b00};
-    assign qb = qb_of ? {qb_sign, 5'b11111, 10'b0} : {qb_sign, qb_exp[4:0], qb_mant, 2'b00};
-    assign qc = qc_of ? {qc_sign, 5'b11111, 10'b0} : {qc_sign, qc_exp[4:0], qc_mant, 2'b00};
-    assign qd = qd_of ? {qd_sign, 5'b11111, 10'b0} : {qd_sign, qd_exp[4:0], qd_mant, 2'b00};
+    assign qa = qa_of ? {qa_sign, 5'b11111, 6'b0} : {qa_sign, qa_exp[4:0], qa_mant[7:2]};
+    assign qb = qb_of ? {qb_sign, 5'b11111, 6'b0} : {qb_sign, qb_exp[4:0], qb_mant[7:2]};
+    assign qc = qc_of ? {qc_sign, 5'b11111, 6'b0} : {qc_sign, qc_exp[4:0], qc_mant[7:2]};
+    assign qd = qd_of ? {qd_sign, 5'b11111, 6'b0} : {qd_sign, qd_exp[4:0], qd_mant[7:2]};
 endmodule
 
 
@@ -200,12 +200,12 @@ module FP8VectorMul2 (
     input [7:0] b,
     input [7:0] c,
 
-    output [15:0] qa,
-    output [15:0] qb,
-    output [15:0] qc,
-    output [15:0] ka,
-    output [15:0] kb,
-    output [15:0] kc,
+    output [11:0] qa,
+    output [11:0] qb,
+    output [11:0] qc,
+    output [11:0] ka,
+    output [11:0] kb,
+    output [11:0] kc,
     output reg out_valid
 );
     // Input Part
@@ -410,10 +410,10 @@ module FP8VectorMul2 (
         kc_mant = kc_mant[7] ? {kc_mant[6:0], 1'b0} : {kc_mant[5:0], 2'b00};
     end
 
-    assign qa = qa_of ? {qa_sign, 5'b11111, 10'b0} : {qa_sign, qa_exp[4:0], qa_mant, 2'b00};
-    assign qb = qb_of ? {qb_sign, 5'b11111, 10'b0} : {qb_sign, qb_exp[4:0], qb_mant, 2'b00};
-    assign qc = qc_of ? {qc_sign, 5'b11111, 10'b0} : {qc_sign, qc_exp[4:0], qc_mant, 2'b00};
-    assign ka = ka_of ? {ka_sign, 5'b11111, 10'b0} : {ka_sign, ka_exp[4:0], ka_mant, 2'b00};
-    assign kb = kb_of ? {kb_sign, 5'b11111, 10'b0} : {kb_sign, kb_exp[4:0], kb_mant, 2'b00};
-    assign kc = kc_of ? {kc_sign, 5'b11111, 10'b0} : {kc_sign, kc_exp[4:0], kc_mant, 2'b00};
+    assign qa = qa_of ? {qa_sign, 5'b11111, 6'b0} : {qa_sign, qa_exp[4:0], qa_mant[7:2]};
+    assign qb = qb_of ? {qb_sign, 5'b11111, 6'b0} : {qb_sign, qb_exp[4:0], qb_mant[7:2]};
+    assign qc = qc_of ? {qc_sign, 5'b11111, 6'b0} : {qc_sign, qc_exp[4:0], qc_mant[7:2]};
+    assign ka = ka_of ? {ka_sign, 5'b11111, 6'b0} : {ka_sign, ka_exp[4:0], ka_mant[7:2]};
+    assign kb = kb_of ? {kb_sign, 5'b11111, 6'b0} : {kb_sign, kb_exp[4:0], kb_mant[7:2]};
+    assign kc = kc_of ? {kc_sign, 5'b11111, 6'b0} : {kc_sign, kc_exp[4:0], kc_mant[7:2]};
 endmodule
