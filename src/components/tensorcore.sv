@@ -160,7 +160,7 @@ endmodule
 module tensorcore_synth_fate_top(
     input clk,
     input rst,
-    output [15:0] test
+    output [7:0] led_tri_io
 );
     reg [7:0] fp8state;
     reg [15:0] fp16state;
@@ -171,8 +171,10 @@ module tensorcore_synth_fate_top(
     reg in_valid;
     wire out_valid;
     wire [15:0] d [3:0][3:0];
+    wire [15:0] test;
 
     assign test = d[0][0]&d[0][1]&d[0][2]&d[0][3]&d[1][0]&d[1][1]&d[1][2]&d[1][3]&d[2][0]&d[2][1]&d[2][2]&d[2][3]&d[3][0]&d[3][1]&d[3][2]&d[3][3];
+    assign led_tri_io = test[7:0];
 
     tensorcore tensorcore_inst (
         .clk(clk),
