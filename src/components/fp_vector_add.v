@@ -196,6 +196,7 @@ module FPVectorAdd #(
     wire [MANT_INDEX_BITS-1:0] frac_shift_b;
     wire [MANT_INDEX_BITS-1:0] frac_shift_c;
     wire [MANT_INDEX_BITS-1:0] frac_shift_d;
+    reg [EXP_BITS-1:0] a1_exp_reg, b1_exp_reg, c1_exp_reg, d1_exp_reg;
 
     FracShift #(
         .EXP_BITS(EXP_BITS), 
@@ -226,7 +227,6 @@ module FPVectorAdd #(
     reg [EXP_BITS:0] a_exp, b_exp, c_exp, d_exp;
     reg a_sign_reg, b_sign_reg, c_sign_reg, d_sign_reg;
     reg neg_a_reg, neg_b_reg, neg_c_reg, neg_d_reg;
-    reg [EXP_BITS-1:0] a1_exp_reg, b1_exp_reg, c1_exp_reg, d1_exp_reg;
     reg a_dec, b_dec, c_dec, d_dec;
     reg a_of, b_of, c_of, d_of;
     reg a_uf, b_uf, c_uf, d_uf;
@@ -269,7 +269,7 @@ module FPVectorAdd #(
         end
     end
 
-    always @(posedge clk or posedge rst) begin
+    always @(posedge clk) begin
         if (rst) begin
             a_out <= 0; b_out <= 0; c_out <= 0; d_out <= 0;
             out_valid <= 0;
