@@ -271,12 +271,12 @@ module FPVectorAdd #(
 
     always @(posedge clk or posedge rst) begin
         if (rst) begin
-            a_out <= 0;
-            b_out <= 0;
-            c_out <= 0;
-            d_out <= 0;
+            a_out <= 0; b_out <= 0; c_out <= 0; d_out <= 0;
             out_valid <= 0;
             out_valid_reg <= 0;
+            a1_exp_reg <= 0; b1_exp_reg <= 0; c1_exp_reg <= 0; d1_exp_reg <= 0;
+            a_sign_reg <= 0; b_sign_reg <= 0; c_sign_reg <= 0; d_sign_reg <= 0;
+            neg_a_reg <= 0; neg_b_reg <= 0; neg_c_reg <= 0; neg_d_reg <= 0;
         end else begin
             out_valid_reg <= in_valid;
             out_valid <= out_valid_reg;
