@@ -13,6 +13,8 @@ module tensorcore (
     reg mul_outvalid [7:0][3:0];
     reg [11:0] acc_intermediate [6:0][3:0][3:0];
     reg acc_outvalid [6:0][3:0];
+    reg [3:0] final_out_valid;
+    assign out_valid = final_out_valid == 4'b1111;
 
     genvar i, j, acc_j;
     generate
@@ -120,6 +122,8 @@ module tensorcore (
                     end
                 end
             end
+            
+            wire [3:0] final_out_valid_temp;
             FPVectorAdd #(
                 .EXP_BITS(5),
                 .MANT_BITS(10)
@@ -127,7 +131,7 @@ module tensorcore (
                 .clk(clk),
                 .rst(rst),
                 .in_valid(acc_outvalid[6][i]),
-                .out_valid(out_valid),
+                .out_valid(final_out_valid_temp[i]),
                 .a_1({acc_intermediate[6][i][0], 4'b0}),
                 .b_1({acc_intermediate[6][i][1], 4'b0}),
                 .c_1({acc_intermediate[6][i][2], 4'b0}),
@@ -141,6 +145,13 @@ module tensorcore (
                 .c_out(d[i][2]),
                 .d_out(d[i][3])
             );
+            always @(posedge clk) begin
+                if (final_out_valid_temp[i]) begin
+                    final_out_valid[i] <= 1;
+                end else begin
+                    final_out_valid[i] <= 0;
+                end
+            end
         end
     endgenerate
 endmodule
@@ -149,19 +160,26 @@ endmodule
 module tensorcore_synth_fate_top(
     input clk,
     input rst,
-    output [15:0] d [3:0][3:0]
+    output [15:0] test
 );
     reg [7:0] fp8state;
     reg [15:0] fp16state;
     reg [7:0] a [3:0][7:0];
     reg [7:0] b [7:0][3:0];
     reg [15:0] c [3:0][3:0];
+    reg e5m2mode;
+    reg in_valid;
+    wire out_valid;
+    wire [15:0] d [3:0][3:0];
+
+    assign test = d[0][0]&d[0][1]&d[0][2]&d[0][3]&d[1][0]&d[1][1]&d[1][2]&d[1][3]&d[2][0]&d[2][1]&d[2][2]&d[2][3]&d[3][0]&d[3][1]&d[3][2]&d[3][3];
 
     tensorcore tensorcore_inst (
         .clk(clk),
         .rst(rst),
-        .e5m2mode(1'b0),
-        .in_valid(1'b1),
+        .e5m2mode(e5m2mode),
+        .in_valid(in_valid),
+        .out_valid(out_valid),
         .a(a),
         .b(b),
         .c(c),
@@ -170,6 +188,8 @@ module tensorcore_synth_fate_top(
     integer i, j;
     always @(posedge clk) begin
         if (rst) begin
+            e5m2mode <= 0;
+            in_valid <= 0;
             fp8state <= 0;
             fp16state <= 0;
             for (i = 0; i < 4; i = i + 1) begin
@@ -184,6 +204,8 @@ module tensorcore_synth_fate_top(
                 end
             end
         end else begin
+            in_valid <= 1;
+            e5m2mode <= ~e5m2mode;
             fp8state <= fp8state + 1;
             fp16state <= fp16state + 1;
             for (i = 0; i < 4; i = i + 1) begin
