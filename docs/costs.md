@@ -19,11 +19,11 @@ In this documentation we list all the vivado synthesised result to check the res
     * Input: a1, b1, c1, d1, a2, b2, c2, d2
     * Output: a1+a2, b1+b2, c1+c2, d1+d2
     * resource cost:
-        * E5M4 (FP10) : 269 LUT, 70 FF, 1 DSP
-        * E5M6 (FP12) : 336 LUT, 78 FF, 1 DSP
-        * E5M10 (FP16) : 535 LUT, 94 FF, 1 DSP
+        * **Following numbers are from implementation run**
+        * E5M6 (FP12) : 333 LUT, 119 FF, 1 DSP
+        * E5M10 (FP16) : 546 LUT, 148 FF, 1 DSP
     * performance:
-        * 1-cycle latency, 1-cycle throughput
+        * 2-cycle latency, 1-cycle throughput
 
 * FP12Inversion
     * Input: a
