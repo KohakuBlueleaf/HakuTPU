@@ -13,9 +13,11 @@ set_property BITSTREAM.CONFIG.SPI_BUSWIDTH 4 [current_design]
 set_property BITSTREAM.CONFIG.SPI_FALL_EDGE YES [current_design]
 set_property BITSTREAM.CONFIG.UNUSEDPIN PULLUP [current_design]
 
-set_property IOSTANDARD DIFF_SSTL12 [get_ports system_clk_n]
-set_property IOSTANDARD DIFF_SSTL12 [get_ports system_clk_p]
-set_property PACKAGE_PIN AY23 [get_ports system_clk_p]
+# 100 MHz clock
+set_property IOSTANDARD DIFF_SSTL12 [get_ports clk_n]
+set_property IOSTANDARD DIFF_SSTL12 [get_ports clk]
+set_property PACKAGE_PIN AY23 [get_ports clk]
+create_clock -add -name clk -period 10.00 [get_ports {clk}];
 
 set_property IOSTANDARD LVCMOS12 [get_ports {led_tri_io[*]}]
 set_property PACKAGE_PIN BA20 [get_ports {led_tri_io[0]}]

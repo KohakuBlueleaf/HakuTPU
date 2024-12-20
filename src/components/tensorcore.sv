@@ -162,6 +162,17 @@ module tensorcore_synth_fate_top(
     input rst,
     output [7:0] led_tri_io
 );
+    logic clk_600m;
+    logic pll_locked;
+
+    // Instantiate the clocking wizard
+    clk_wiz_0 clock_gen (
+        .clk_out1   (clk_600m),
+        .locked     (pll_locked),
+        .clk_in1    (clk),
+        .reset      (rst)
+    );
+
     reg [7:0] fp8state;
     reg [15:0] fp16state;
     reg [7:0] a [3:0][7:0];
@@ -177,7 +188,7 @@ module tensorcore_synth_fate_top(
     assign led_tri_io = test[7:0];
 
     tensorcore tensorcore_inst (
-        .clk(clk),
+        .clk(clk_600m),
         .rst(rst),
         .e5m2mode(e5m2mode),
         .in_valid(in_valid),
@@ -188,7 +199,7 @@ module tensorcore_synth_fate_top(
         .d(d)
     );
     integer i, j;
-    always @(posedge clk) begin
+    always @(posedge clk_600m) begin
         if (rst) begin
             e5m2mode <= 0;
             in_valid <= 0;
