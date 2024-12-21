@@ -138,6 +138,39 @@ Which means we can do [a, b, c, d] + [q, k, v, m] = [a+q, b+k, c+v, d+m] with on
 
 No much trick... only brute force.
 
+### FP16 FMA
+
+```
+FMA(a, b, c) = a*b + c
+First DSP
+010000000100000001                                  B(18)
+*
+(
+0000000000000000000000000eeeee                      A(30): Exponent from a
++
+0000000000000110001000eeeee                         D(27): Exponent from b and exponent offset(-15 in 6bit)
+)
++
+0000000000000000000000000000000000eeeeee00000000    C(48): Exponent from -c (6bit) 
+=
+0000000000000000001100010xeeeeee0xeeeeee00eeeeee    B*(A+D): Exponent a+b-15 and a+b 
++
+0000000000000000000000000000000000eeeeee00000000    C(48): Exponent from -c (6bit) 
+=
+0000000000000000001100010xeeeeeexxeeeeee00eeeeee    B*(A+D) + C Exponent a+b-15, and a+b-15-c 
+
+
+(if shift left larger than 11, directly take c as result)
+00000001.mmmmmmmmmm                                  B(18): mantissa from a
+*
+00000000000000000001.mmmmmmmmmm                      A(30): mantissa from b
++
+0000000000000000000000000001.mmmmmmmmmm0000000000    C(48): shifted mantissa from c 
+=
+0000000000000000000000000mmm.mmmmmmmmmmmmmmmmmmmm    B*A + c: 1.a * 1.b
+
+```
+
 ### Division
 
 For FP16 division a/b, we decide to use FP12 inverse: inv(a) = 1/a with FP16 FMA unit to achieve it.
