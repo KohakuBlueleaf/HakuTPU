@@ -3,7 +3,8 @@ module DSP # (
     parameter integer OUTPUTREG = 1,
     parameter integer DSPPIPEREG = 1,
     parameter integer CONTROLREG = 1,
-    parameter integer NEEDPREADDER = 1
+    parameter integer NEEDPREADDER = 1,
+    parameter SIMD_MODE = "ONE48"
 )(
     input clk,
     input rst,
@@ -33,7 +34,8 @@ module DSP # (
         .PREG(OUTPUTREG),
         .INMODEREG(CONTROLREG),
         .OPMODEREG(CONTROLREG),
-        .ALUMODEREG(CONTROLREG)
+        .ALUMODEREG(CONTROLREG),
+        .USE_SIMD(SIMD_MODE)
     ) dsp_unit (
         .RSTA(rst),
         .RSTALLCARRYIN(rst),
