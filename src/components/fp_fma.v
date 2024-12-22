@@ -11,7 +11,7 @@ module FP16ExponentFMA(
     input [4:0] c_exp,
     output ab_inf,
     output ab_zero,
-    output [5:0] ab_exp,
+    output [4:0] ab_exp,
     output [5:0] c_shift
 );
     reg [4:0] c_exp_reg1, c_exp_reg2;
@@ -42,19 +42,17 @@ module FP16ExponentFMA(
         .OPMODE(9'b110000101)  // X = M, Y = M, W = C, Z = 0
     );
 
-    assign ab_exp = P[21:16];
+    assign ab_exp = P[20:16];
     assign c_shift = P[13:8];
-    assign ab_inf = ab_exp[5] & possible_of;
-    assign ab_zero = ab_exp[5] & ~possible_of;
+    assign ab_inf = P[21] & possible_of;
+    assign ab_zero = P[21] & ~possible_of;
 
     always @(posedge clk) begin
         if(rst) begin
-            c_exp_reg1 <= 0;
-            c_exp_reg2 <= 0;
-            possible_of <= 0;
+            c_exp_reg1 <= 0; c_exp_reg2 <= 0;
+            possible_of <= 0; 
         end else begin
-            c_exp_reg1 <= c_exp;
-            c_exp_reg2 <= c_exp_reg1;
+            c_exp_reg1 <= c_exp; c_exp_reg2 <= c_exp_reg1;
             possible_of <= a_exp[4] & b_exp[4];
         end
     end
@@ -84,15 +82,17 @@ module FP16MantissaFMA(
     output reg [4:0] out_exp,
     output reg inf
 );
-    wire a_subnorm, b_subnorm, c_subnorm;
+    wire a_subnorm, b_subnorm, c_subnorm, ab_subnorm;
     reg signed [5:0] c_shift_reg1, c_shift_reg2;
     reg [4:0] c_exp_reg1, c_exp_reg2, ab_exp_reg1, ab_exp_reg2;
     reg [9:0] c_mant_reg1, c_mant_reg2;
     reg neg_reg1, neg_reg2, ab_sign_reg1, ab_sign_reg2, c_sign_reg1, c_sign_reg2;
     reg ab_inf_reg1, ab_inf_reg2, ab_zero_reg1, ab_zero_reg2;
+    reg ab_subnorm_reg1, ab_subnorm_reg2, c_subnorm_reg1, c_subnorm_reg2;
+    assign ab_subnorm = ab_exp == 5'b00000 | ab_zero;
+    assign c_subnorm = c_exp == 5'b00000;
     assign a_subnorm = a_exp == 5'b00000;
     assign b_subnorm = b_exp == 5'b00000;
-    assign c_subnorm = c_exp == 5'b00000;
 
     always @(posedge clk) begin
         if(rst) begin
@@ -103,22 +103,26 @@ module FP16MantissaFMA(
             neg_reg1 <= 0; neg_reg2 <= 0; 
             ab_sign_reg1 <= 0; ab_sign_reg2 <= 0; c_sign_reg1 <= 0; c_sign_reg2 <= 0;
             ab_inf_reg1 <= 0; ab_inf_reg2 <= 0; ab_zero_reg1 <= 0; ab_zero_reg2 <= 0;
+            ab_subnorm_reg1 <= 0; ab_subnorm_reg2 <= 0;
+            c_subnorm_reg1 <= 0; c_subnorm_reg2 <= 0;
         end else begin
             c_exp_reg1 <= c_exp; c_exp_reg2 <= c_exp_reg1;
             c_mant_reg1 <= c_mant; c_mant_reg2 <= c_mant_reg1;
-            c_shift_reg1 <= c_shift; c_shift_reg2 <= c_shift_reg1;
             ab_exp_reg1 <= ab_exp; ab_exp_reg2 <= ab_exp_reg1;
             neg_reg1 <= neg; neg_reg2 <= neg_reg1;
             ab_sign_reg1 <= ab_sign; ab_sign_reg2 <= ab_sign_reg1;
             c_sign_reg1 <= c_sign; c_sign_reg2 <= c_sign_reg1;
             ab_inf_reg1 <= ab_inf; ab_inf_reg2 <= ab_inf_reg1;
             ab_zero_reg1 <= ab_zero; ab_zero_reg2 <= ab_zero_reg1;
+            ab_subnorm_reg1 <= ab_subnorm; ab_subnorm_reg2 <= ab_subnorm_reg1;
+            c_subnorm_reg1 <= c_subnorm; c_subnorm_reg2 <= c_subnorm_reg1;
+            c_shift_reg1 <= c_shift; c_shift_reg2 <= c_shift_reg1;
         end
     end
 
     wire [17:0] B = {~a_subnorm, a_mant};
     wire [29:0] A = {~b_subnorm, b_mant};
-    wire [47:0] tempC = {c_exp_reg1!=5'b00000, c_mant_reg1, 10'b0};
+    wire [47:0] tempC = {~c_subnorm_reg1, c_mant_reg1, 10'b0};
     wire [47:0] C = (c_shift_reg1>=0 ? (tempC >> c_shift_reg1) : (tempC << (-c_shift_reg1))) + (c_shift_reg1!=0 & neg_reg1);
     wire [47:0] P;
 
@@ -135,6 +139,7 @@ module FP16MantissaFMA(
         .A(A),
         .B(B),
         .C(C),
+        .D(27'd0),
         .P(P),
         .ALUMODE({2'b00, neg_reg1, neg_reg1}),     // Z + W + X + Y + CIN
         .INMODE(5'b00000),     // M = A*B
@@ -148,7 +153,8 @@ module FP16MantissaFMA(
 
     FracShift #(
         .EXP_BITS(5), 
-        .MANT_BITS(11)
+        .MANT_BITS(11),
+        .OFFSET(2)
     ) frac_shift_unit (
         .frac(out_mant),
         .exp(exp),
@@ -159,17 +165,19 @@ module FP16MantissaFMA(
     reg [47:0] P_temp;
 
     always @(*) begin
+        P_temp = P;
+        if(c_subnorm_reg2 & (~ab_subnorm_reg2 | ~neg_reg2)) begin
+            P_temp = P_temp << 1;
+        end
         if(c_shift_reg2 > 0) begin
-            P_temp = P;
             out_mant = P_temp[22:10];
             if(neg_reg2) begin
                 out_mant = ~out_mant;
             end
         end else if(c_shift_reg2 < 0) begin
-            P_temp = P >> (-c_shift_reg2);
+            P_temp = P_temp >> (-c_shift_reg2);
             out_mant = P_temp[22:10];
         end else begin
-            P_temp = P;
             if(neg_reg2) begin
                 out_mant = {1'b0, P_temp[21:10]};
             end else begin
@@ -179,19 +187,18 @@ module FP16MantissaFMA(
         exp = c_shift_reg2 >= 0 ? ab_exp_reg2 : c_exp_reg2;
     end
     always @(*) begin
+        out_sign = (c_shift_reg2==0)
+                    //if no substraction, ab_sign or c_sign are same  
+                    //if substraction and no overflow, c is larger than ab than c_sign is out sign
+                    //if substraction and overflow, ab is larger than c than ab_sign is out sign
+                    ? (neg_reg2 ? (P_temp[23] ? ab_sign_reg2 : c_sign_reg2) : c_sign_reg2) 
+                    : (c_shift_reg2 > 0 ? ab_sign_reg2 : c_sign_reg2);
         if(c_shift_reg2 <= -12) begin
-            out_sign = c_sign_reg2;
             out = c_mant_reg2;
             out_exp = c_exp_reg2;
         end else begin
             out_exp = exp + 2 - frac_shift;
             out = result_frac[11:2];
-            out_sign = (c_shift_reg2==0)
-                        //if no substraction, ab_sign or c_sign are same  
-                        //if substraction and no overflow, c is larger than ab than c_sign is out sign
-                        //if substraction and overflow, ab is larger than c than ab_sign is out sign
-                        ? (neg_reg2 ? (P_temp[23] ? c_sign_reg2 : ab_sign_reg2) : c_sign_reg2) 
-                        : (c_shift_reg2 > 0 ? ab_sign_reg2 : c_sign_reg2);
         end
 
         if(ab_inf_reg1) begin
@@ -261,7 +268,7 @@ module FP16FMA (
     end
 
     wire ab_inf, ab_zero;
-    wire signed [5:0] ab_exp;
+    wire [4:0] ab_exp;
     wire signed [5:0] c_shift;
     FP16ExponentFMA fma_exp_unit(
         .clk(clk),
@@ -285,7 +292,7 @@ module FP16FMA (
         .rst(rst),
         .ab_sign(a_sign_reg2 ^ b_sign_reg2),
         .neg(a_sign_reg2 ^ b_sign_reg2 ^ c_sign_reg2),
-        .ab_exp(ab_exp[4:0]),
+        .ab_exp(ab_exp),
         .a_sign(a_sign_reg2),
         .b_sign(b_sign_reg2),
         .c_sign(c_sign_reg2),
@@ -317,6 +324,55 @@ module FP16FMA (
             out_valid_reg2 <= out_valid_reg1;
             out_valid_reg3 <= out_valid_reg2;
             out_valid <= out_valid_reg3;
+        end
+    end
+endmodule
+
+
+module fp16_fma_synth_fate_top(
+    input clk,
+    input rst,
+    output [7:0] led_tri_io
+);
+    wire clk_600m;
+    wire pll_locked;
+
+    // Instantiate the clocking wizard
+    // clk_wiz_0 clock_gen (
+    //     .clk_out1   (clk_600m),
+    //     .locked     (pll_locked),
+    //     .clk_in1    (clk),
+    //     .reset      (rst)
+    // );
+
+    reg in_valid;
+    reg [15:0] a, b, c;
+    wire out_valid;
+    wire [15:0] out;
+    assign led_tri_io = out_valid ? out[7:0] | out[15:8] : 8'b0;
+
+    FP16FMA fma_unit(
+        .clk(clk_600m),
+        .rst(rst),
+        .in_valid(in_valid),
+        .a(a),
+        .b(b),
+        .c(c),
+        .out(out),
+        .out_valid(out_valid)
+    );
+
+    always @(posedge clk_600m) begin
+        if(rst) begin
+            a <= 0;
+            b <= 0;
+            c <= 0;
+            in_valid <= 0;
+        end else begin
+            in_valid <= 1;
+            a <= a + 1;
+            b <= b + 2;
+            c <= c + 3;
         end
     end
 endmodule

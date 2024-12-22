@@ -142,7 +142,7 @@ No much trick... only brute force.
 
 ```
 FMA(a, b, c) = a*b + c
-First DSP
+First DSP:
 010000000100000001                                  B(18)
 *
 (
@@ -157,9 +157,10 @@ First DSP
 +
 0000000000000000000000000000000000eeeeee00000000    C(48): Exponent from -c (6bit) 
 =
-0000000000000000001100010xeeeeeexxeeeeee00eeeeee    B*(A+D) + C Exponent a+b-15, and a+b-15-c 
+0000000000000000001100010xeeeeeexxeeeeee00eeeeee    B*(A+D) + C Exponent a+b-15(ab_exp), and a+b-15-c (shift of c_mant)
 
 
+Second DSP:
 (if shift left larger than 11, directly take c as result)
 00000001.mmmmmmmmmm                                  B(18): mantissa from a
 *
@@ -167,7 +168,7 @@ First DSP
 +
 0000000000000000000000000001.mmmmmmmmmm0000000000    C(48): shifted mantissa from c 
 =
-0000000000000000000000000mmm.mmmmmmmmmmmmmmmmmmmm    B*A + c: 1.a * 1.b
+0000000000000000000000000mmm.mmmmmmmmmmmmmmmmmmmm    B*A + c: 1.a * 1.b +/- 1.c(shifted)
 
 ```
 
