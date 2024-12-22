@@ -67,7 +67,7 @@ module FP16Adder_tb;
         .a_2(a),
         .b_2(b),
         .c_2(c),
-        .d_2(d),
+        .d_2(12'b0),
         .a_out(aa_out),
         .b_out(bb_out),
         .c_out(cc_out),
@@ -91,6 +91,10 @@ module FP16Adder_tb;
         b = 0;
         c = 0;
         d = 0;
+        aa = 0;
+        bb = 0;
+        cc = 0;
+        dd = 0;
     end
 
     //main
