@@ -123,7 +123,9 @@ module FP16MantissaFMA(
     wire [17:0] B = {~a_subnorm, a_mant};
     wire [29:0] A = {~b_subnorm, b_mant};
     wire [47:0] tempC = {~c_subnorm_reg1, c_mant_reg1, 10'b0};
-    wire [47:0] C = (c_shift_reg1>=0 ? (tempC >> c_shift_reg1) : (tempC << (-c_shift_reg1))) + (c_shift_reg1!=0 & neg_reg1);
+    wire [47:0] C = (c_shift_reg1>=0 
+                    ? (tempC >> c_shift_reg1) 
+                    : (tempC << (-c_shift_reg1 - (ab_subnorm_reg1 & ~c_subnorm_reg1)))) + (c_shift_reg1!=0 & neg_reg1);
     wire [47:0] P;
 
     DSP #(
@@ -166,7 +168,8 @@ module FP16MantissaFMA(
 
     always @(*) begin
         P_temp = P;
-        if(c_subnorm_reg2 & (~ab_subnorm_reg2 | ~neg_reg2)) begin
+        if((c_subnorm_reg2 & (~ab_subnorm_reg2 | ~neg_reg2)) 
+            | (~c_subnorm_reg2 & ab_subnorm_reg2)) begin
             P_temp = P_temp << 1;
         end
         if(c_shift_reg2 > 0) begin
@@ -338,12 +341,12 @@ module fp16_fma_synth_fate_top(
     wire pll_locked;
 
     // Instantiate the clocking wizard
-    // clk_wiz_0 clock_gen (
-    //     .clk_out1   (clk_600m),
-    //     .locked     (pll_locked),
-    //     .clk_in1    (clk),
-    //     .reset      (rst)
-    // );
+    clk_wiz_0 clock_gen (
+        .clk_out1   (clk_600m),
+        .locked     (pll_locked),
+        .clk_in1    (clk),
+        .reset      (rst)
+    );
 
     reg in_valid;
     reg [15:0] a, b, c;

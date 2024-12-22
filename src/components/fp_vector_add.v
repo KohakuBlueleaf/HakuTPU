@@ -1,7 +1,8 @@
 module FracShift #(
     parameter EXP_BITS = 5,
     parameter MANT_BITS = 6,
-    parameter MANT_INDEX_BITS = $clog2(MANT_BITS+1)
+    parameter MANT_INDEX_BITS = $clog2(MANT_BITS+1),
+    parameter OFFSET = 1
 ) (
     input [MANT_BITS+1:0] frac,
     input [EXP_BITS-1:0] exp,
@@ -36,7 +37,8 @@ module FracShift #(
             leading_zeros[0] = ~frac[MANT_BITS+1];
         end
         //maximumly get subnormal result
-        frac_shift = (leading_zeros > exp ? exp+1 : leading_zeros);
+        //offset can be different since the input frac is fixed point number with unknown offset
+        frac_shift = (leading_zeros > exp+(OFFSET-1) ? exp+OFFSET : leading_zeros);
         shifted_frac = frac << frac_shift;
     end
 endmodule

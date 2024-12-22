@@ -51,70 +51,70 @@ module FP16Exponent_tb();
         rst = 1;
         #10 rst = 0;
 
-        // // a*b > c (exponent)
-        // $display("a*b > c (exponent)");
-        // a = 16'b0_10001_1110000000;
-        // b = 16'b0_01111_1000000000;
-        // c = 16'b0_10000_1111000000;
-        // for (i = 0; i < 8; i = i + 1) begin
-        //     in_valid = 1;
-        //     a[15] = i[0];
-        //     b[15] = i[1];
-        //     c[15] = i[2];
-        //     #10
-        //     in_valid = 0;
-        //     #40
-        //     $display(
-        //         "T=%04d || a=%14.10f, b=%14.10f, c=%14.10f || out: %14.10f || ground truth: %14.10f",
-        //         $time, $bitstoreal(a_real), $bitstoreal(b_real), $bitstoreal(c_real), $bitstoreal(out_real),
-        //         $bitstoreal(a_real) * $bitstoreal(b_real) + $bitstoreal(c_real)
-        //     );
-        // end
+        // a*b > c (exponent)
+        $display("a*b > c (exponent)");
+        a = 16'b0_10001_1110000000;
+        b = 16'b0_01111_1000000000;
+        c = 16'b0_10000_1111000000;
+        for (i = 0; i < 8; i = i + 1) begin
+            in_valid = 1;
+            a[15] = i[0];
+            b[15] = i[1];
+            c[15] = i[2];
+            #10
+            in_valid = 0;
+            #40
+            $display(
+                "T=%04d || a=%14.10f, b=%14.10f, c=%14.10f || out: %14.10f || ground truth: %14.10f",
+                $time, $bitstoreal(a_real), $bitstoreal(b_real), $bitstoreal(c_real), $bitstoreal(out_real),
+                $bitstoreal(a_real) * $bitstoreal(b_real) + $bitstoreal(c_real)
+            );
+        end
 
-        // // a*b < c (exponent)
-        // $display("a*b < c (exponent)");
-        // a = 16'b0_10000_1110000000;
-        // b = 16'b0_01111_1000000000;
-        // c = 16'b0_10010_1111000000;
-        // for (i = 0; i < 8; i = i + 1) begin
-        //     in_valid = 1;
-        //     a[15] = i[0];
-        //     b[15] = i[1];
-        //     c[15] = i[2];
-        //     #10
-        //     in_valid = 0;
-        //     #40
-        //     $display(
-        //         "T=%04d || a=%14.10f, b=%14.10f, c=%14.10f || out: %14.10f || ground truth: %14.10f",
-        //         $time, $bitstoreal(a_real), $bitstoreal(b_real), $bitstoreal(c_real), $bitstoreal(out_real),
-        //         $bitstoreal(a_real) * $bitstoreal(b_real) + $bitstoreal(c_real)
-        //     );
-        // end
+        // a*b < c (exponent)
+        $display("a*b < c (exponent)");
+        a = 16'b0_10000_1110000000;
+        b = 16'b0_01111_1000000000;
+        c = 16'b0_10010_1111000000;
+        for (i = 0; i < 8; i = i + 1) begin
+            in_valid = 1;
+            a[15] = i[0];
+            b[15] = i[1];
+            c[15] = i[2];
+            #10
+            in_valid = 0;
+            #40
+            $display(
+                "T=%04d || a=%14.10f, b=%14.10f, c=%14.10f || out: %14.10f || ground truth: %14.10f",
+                $time, $bitstoreal(a_real), $bitstoreal(b_real), $bitstoreal(c_real), $bitstoreal(out_real),
+                $bitstoreal(a_real) * $bitstoreal(b_real) + $bitstoreal(c_real)
+            );
+        end
 
-        // // a*b == c (exponent)
-        // $display("a*b == c (exponent)");
-        // a = 16'b0_10000_1110000000;
-        // b = 16'b0_01111_1000000000;
-        // c = 16'b0_10001_1111000000;
-        // for (i = 0; i < 8; i = i + 1) begin
-        //     in_valid = 1;
-        //     a[15] = i[0];
-        //     b[15] = i[1];
-        //     c[15] = i[2];
-        //     #10
-        //     in_valid = 0;
-        //     #40
-        //     $display(
-        //         "T=%04d || a=%14.10f, b=%14.10f, c=%14.10f || out: %14.10f || ground truth: %14.10f",
-        //         $time, $bitstoreal(a_real), $bitstoreal(b_real), $bitstoreal(c_real), $bitstoreal(out_real),
-        //         $bitstoreal(a_real) * $bitstoreal(b_real) + $bitstoreal(c_real)
-        //     );
-        // end
+        // a*b == c (exponent)
+        $display("a*b == c (exponent)");
+        a = 16'b0_10000_1110000000;
+        b = 16'b0_01111_1000000000;
+        c = 16'b0_10001_1111000000;
+        for (i = 0; i < 8; i = i + 1) begin
+            in_valid = 1;
+            a[15] = i[0];
+            b[15] = i[1];
+            c[15] = i[2];
+            #10
+            in_valid = 0;
+            #40
+            $display(
+                "T=%04d || a=%14.10f, b=%14.10f, c=%14.10f || out: %14.10f || ground truth: %14.10f",
+                $time, $bitstoreal(a_real), $bitstoreal(b_real), $bitstoreal(c_real), $bitstoreal(out_real),
+                $bitstoreal(a_real) * $bitstoreal(b_real) + $bitstoreal(c_real)
+            );
+        end
 
         // a*b is subnorm, c is not
         $display("a*b is subnorm, c is not");
-        a = 16'b0_00000_0101000000;
-        b = 16'b0_01111_1000000000;
+        a = 16'b0_00000_0011000000;
+        b = 16'b0_01111_1010000000;
         c = 16'b0_00001_1011010000;
         for (i = 0; i < 8; i = i + 1) begin
             in_valid = 1;
