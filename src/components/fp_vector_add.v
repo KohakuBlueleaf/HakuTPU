@@ -277,33 +277,20 @@ module FPVectorAdd #(
     end
 
     always @(posedge clk) begin
-        if (rst) begin
-            a_out <= 0; b_out <= 0; c_out <= 0; d_out <= 0;
-            out_valid <= 0;
-            out_valid_reg <= 0;
-            out_valid_reg2 <= 0;
-            a1_exp_reg <= 0; b1_exp_reg <= 0; c1_exp_reg <= 0; d1_exp_reg <= 0;
-            a_sign_reg <= 0; b_sign_reg <= 0; c_sign_reg <= 0; d_sign_reg <= 0;
-            neg_a_reg <= 0; neg_b_reg <= 0; neg_c_reg <= 0; neg_d_reg <= 0;
-            a1_exp_reg_t <= 0; b1_exp_reg_t <= 0; c1_exp_reg_t <= 0; d1_exp_reg_t <= 0;
-            a_sign_reg_t <= 0; b_sign_reg_t <= 0; c_sign_reg_t <= 0; d_sign_reg_t <= 0;
-            neg_a_reg_t <= 0; neg_b_reg_t <= 0; neg_c_reg_t <= 0; neg_d_reg_t <= 0;
-        end else begin
-            out_valid_reg <= in_valid;
-            out_valid_reg2 <= out_valid_reg;
-            out_valid <= out_valid_reg2;
-            a1_exp_reg_t <= a1_exp; b1_exp_reg_t <= b1_exp; c1_exp_reg_t <= c1_exp; d1_exp_reg_t <= d1_exp;
-            a_sign_reg_t <= a_sign; b_sign_reg_t <= b_sign; c_sign_reg_t <= c_sign; d_sign_reg_t <= d_sign;
-            neg_a_reg_t <= neg_a; neg_b_reg_t <= neg_b; neg_c_reg_t <= neg_c; neg_d_reg_t <= neg_d;
-            a1_exp_reg <= a1_exp_reg_t; b1_exp_reg <= b1_exp_reg_t; c1_exp_reg <= c1_exp_reg_t; d1_exp_reg <= d1_exp_reg_t;
-            a_sign_reg <= a_sign_reg_t; b_sign_reg <= b_sign_reg_t; c_sign_reg <= c_sign_reg_t; d_sign_reg <= d_sign_reg_t;
-            neg_a_reg <= neg_a_reg_t; neg_b_reg <= neg_b_reg_t; neg_c_reg <= neg_c_reg_t; neg_d_reg <= neg_d_reg_t;
-            if (out_valid_reg) begin
-                a_out <= {a_sign_reg, a_exp[EXP_BITS-1:0], result_frac_a[MANT_BITS:1]};
-                b_out <= {b_sign_reg, b_exp[EXP_BITS-1:0], result_frac_b[MANT_BITS:1]};
-                c_out <= {c_sign_reg, c_exp[EXP_BITS-1:0], result_frac_c[MANT_BITS:1]};
-                d_out <= {d_sign_reg, d_exp[EXP_BITS-1:0], result_frac_d[MANT_BITS:1]};
-            end
+        out_valid_reg <= in_valid;
+        out_valid_reg2 <= out_valid_reg;
+        out_valid <= out_valid_reg2;
+        a1_exp_reg_t <= a1_exp; b1_exp_reg_t <= b1_exp; c1_exp_reg_t <= c1_exp; d1_exp_reg_t <= d1_exp;
+        a_sign_reg_t <= a_sign; b_sign_reg_t <= b_sign; c_sign_reg_t <= c_sign; d_sign_reg_t <= d_sign;
+        neg_a_reg_t <= neg_a; neg_b_reg_t <= neg_b; neg_c_reg_t <= neg_c; neg_d_reg_t <= neg_d;
+        a1_exp_reg <= a1_exp_reg_t; b1_exp_reg <= b1_exp_reg_t; c1_exp_reg <= c1_exp_reg_t; d1_exp_reg <= d1_exp_reg_t;
+        a_sign_reg <= a_sign_reg_t; b_sign_reg <= b_sign_reg_t; c_sign_reg <= c_sign_reg_t; d_sign_reg <= d_sign_reg_t;
+        neg_a_reg <= neg_a_reg_t; neg_b_reg <= neg_b_reg_t; neg_c_reg <= neg_c_reg_t; neg_d_reg <= neg_d_reg_t;
+        if (out_valid_reg) begin
+            a_out <= {a_sign_reg, a_exp[EXP_BITS-1:0], result_frac_a[MANT_BITS:1]};
+            b_out <= {b_sign_reg, b_exp[EXP_BITS-1:0], result_frac_b[MANT_BITS:1]};
+            c_out <= {c_sign_reg, c_exp[EXP_BITS-1:0], result_frac_c[MANT_BITS:1]};
+            d_out <= {d_sign_reg, d_exp[EXP_BITS-1:0], result_frac_d[MANT_BITS:1]};
         end
     end
 endmodule

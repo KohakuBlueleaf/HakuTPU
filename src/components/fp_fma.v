@@ -48,13 +48,8 @@ module FP16ExponentFMA(
     assign ab_zero = P[21] & ~possible_of;
 
     always @(posedge clk) begin
-        if(rst) begin
-            c_exp_reg1 <= 0; c_exp_reg2 <= 0;
-            possible_of <= 0; 
-        end else begin
-            c_exp_reg1 <= c_exp; c_exp_reg2 <= c_exp_reg1;
-            possible_of <= a_exp[4] & b_exp[4];
-        end
+        c_exp_reg1 <= c_exp; c_exp_reg2 <= c_exp_reg1;
+        possible_of <= a_exp[4] & b_exp[4];
     end
 endmodule
 
@@ -95,29 +90,17 @@ module FP16MantissaFMA(
     assign b_subnorm = b_exp == 5'b00000;
 
     always @(posedge clk) begin
-        if(rst) begin
-            c_exp_reg1 <= 0; c_exp_reg2 <= 0;
-            c_mant_reg1 <= 0; c_mant_reg2 <= 0;
-            c_shift_reg1 <= 0; c_shift_reg2 <= 0;
-            ab_exp_reg1 <= 0; ab_exp_reg2 <= 0;
-            neg_reg1 <= 0; neg_reg2 <= 0; 
-            ab_sign_reg1 <= 0; ab_sign_reg2 <= 0; c_sign_reg1 <= 0; c_sign_reg2 <= 0;
-            ab_inf_reg1 <= 0; ab_inf_reg2 <= 0; ab_zero_reg1 <= 0; ab_zero_reg2 <= 0;
-            ab_subnorm_reg1 <= 0; ab_subnorm_reg2 <= 0;
-            c_subnorm_reg1 <= 0; c_subnorm_reg2 <= 0;
-        end else begin
-            c_exp_reg1 <= c_exp; c_exp_reg2 <= c_exp_reg1;
-            c_mant_reg1 <= c_mant; c_mant_reg2 <= c_mant_reg1;
-            ab_exp_reg1 <= ab_exp; ab_exp_reg2 <= ab_exp_reg1;
-            neg_reg1 <= neg; neg_reg2 <= neg_reg1;
-            ab_sign_reg1 <= ab_sign; ab_sign_reg2 <= ab_sign_reg1;
-            c_sign_reg1 <= c_sign; c_sign_reg2 <= c_sign_reg1;
-            ab_inf_reg1 <= ab_inf; ab_inf_reg2 <= ab_inf_reg1;
-            ab_zero_reg1 <= ab_zero; ab_zero_reg2 <= ab_zero_reg1;
-            ab_subnorm_reg1 <= ab_subnorm; ab_subnorm_reg2 <= ab_subnorm_reg1;
-            c_subnorm_reg1 <= c_subnorm; c_subnorm_reg2 <= c_subnorm_reg1;
-            c_shift_reg1 <= c_shift; c_shift_reg2 <= c_shift_reg1;
-        end
+        c_exp_reg1 <= c_exp; c_exp_reg2 <= c_exp_reg1;
+        c_mant_reg1 <= c_mant; c_mant_reg2 <= c_mant_reg1;
+        ab_exp_reg1 <= ab_exp; ab_exp_reg2 <= ab_exp_reg1;
+        neg_reg1 <= neg; neg_reg2 <= neg_reg1;
+        ab_sign_reg1 <= ab_sign; ab_sign_reg2 <= ab_sign_reg1;
+        c_sign_reg1 <= c_sign; c_sign_reg2 <= c_sign_reg1;
+        ab_inf_reg1 <= ab_inf; ab_inf_reg2 <= ab_inf_reg1;
+        ab_zero_reg1 <= ab_zero; ab_zero_reg2 <= ab_zero_reg1;
+        ab_subnorm_reg1 <= ab_subnorm; ab_subnorm_reg2 <= ab_subnorm_reg1;
+        c_subnorm_reg1 <= c_subnorm; c_subnorm_reg2 <= c_subnorm_reg1;
+        c_shift_reg1 <= c_shift; c_shift_reg2 <= c_shift_reg1;
     end
 
     wire [17:0] B = {~a_subnorm, a_mant};
@@ -247,27 +230,15 @@ module FP16FMA (
     wire neg = ab_sign ^ c_sign;
 
     always @(posedge clk) begin
-        if(rst) begin
-            a_sign_reg1 <= 0; a_sign_reg2 <= 0;
-            b_sign_reg1 <= 0; b_sign_reg2 <= 0;
-            c_sign_reg1 <= 0; c_sign_reg2 <= 0;
-            a_exp_reg1 <= 0; a_exp_reg2 <= 0;
-            b_exp_reg1 <= 0; b_exp_reg2 <= 0;
-            c_exp_reg1 <= 0; c_exp_reg2 <= 0;
-            a_mant_reg1 <= 0; a_mant_reg2 <= 0;
-            b_mant_reg1 <= 0; b_mant_reg2 <= 0;
-            c_mant_reg1 <= 0; c_mant_reg2 <= 0;
-        end else begin
-            a_sign_reg1 <= a_sign; a_sign_reg2 <= a_sign_reg1;
-            b_sign_reg1 <= b_sign; b_sign_reg2 <= b_sign_reg1;
-            c_sign_reg1 <= c_sign; c_sign_reg2 <= c_sign_reg1;
-            a_exp_reg1 <= a_exp; a_exp_reg2 <= a_exp_reg1;
-            b_exp_reg1 <= b_exp; b_exp_reg2 <= b_exp_reg1;
-            c_exp_reg1 <= c_exp; c_exp_reg2 <= c_exp_reg1;
-            a_mant_reg1 <= a_mant; a_mant_reg2 <= a_mant_reg1;
-            b_mant_reg1 <= b_mant; b_mant_reg2 <= b_mant_reg1;
-            c_mant_reg1 <= c_mant; c_mant_reg2 <= c_mant_reg1;
-        end
+        a_sign_reg1 <= a_sign; a_sign_reg2 <= a_sign_reg1;
+        b_sign_reg1 <= b_sign; b_sign_reg2 <= b_sign_reg1;
+        c_sign_reg1 <= c_sign; c_sign_reg2 <= c_sign_reg1;
+        a_exp_reg1 <= a_exp; a_exp_reg2 <= a_exp_reg1;
+        b_exp_reg1 <= b_exp; b_exp_reg2 <= b_exp_reg1;
+        c_exp_reg1 <= c_exp; c_exp_reg2 <= c_exp_reg1;
+        a_mant_reg1 <= a_mant; a_mant_reg2 <= a_mant_reg1;
+        b_mant_reg1 <= b_mant; b_mant_reg2 <= b_mant_reg1;
+        c_mant_reg1 <= c_mant; c_mant_reg2 <= c_mant_reg1;
     end
 
     wire ab_inf, ab_zero;
@@ -317,17 +288,10 @@ module FP16FMA (
 
     reg out_valid_reg1, out_valid_reg2, out_valid_reg3;
     always @(posedge clk) begin
-        if(rst) begin
-            out_valid <= 0;
-            out_valid_reg1 <= 0;
-            out_valid_reg2 <= 0;
-            out_valid_reg3 <= 0;
-        end else begin
-            out_valid_reg1 <= in_valid;
-            out_valid_reg2 <= out_valid_reg1;
-            out_valid_reg3 <= out_valid_reg2;
-            out_valid <= out_valid_reg3;
-        end
+        out_valid_reg1 <= in_valid;
+        out_valid_reg2 <= out_valid_reg1;
+        out_valid_reg3 <= out_valid_reg2;
+        out_valid <= out_valid_reg3;
     end
 endmodule
 

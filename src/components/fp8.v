@@ -48,47 +48,25 @@ module FP8VectorMul1 (
     reg out_valid_reg2;
 
     always @(posedge clk) begin
-        if (rst) begin
-            Creg1 <= 48'b0;
-            out_valid_reg1 <= 0;
-            out_valid_reg2 <= 0;
-            out_valid <= 0;
-            a_reg1 <= 0;
-            a_reg2 <= 0;
-            a_reg3 <= 0;
-            b_reg1 <= 0;
-            b_reg2 <= 0;
-            b_reg3 <= 0;
-            c_reg1 <= 0;
-            c_reg2 <= 0;
-            c_reg3 <= 0;
-            d_reg1 <= 0;
-            d_reg2 <= 0;
-            d_reg3 <= 0;
-            q_reg1 <= 0;
-            q_reg2 <= 0;
-            q_reg3 <= 0;
-        end else begin
-            Creg1 <= C;
-            out_valid_reg1 <= in_valid;
-            out_valid_reg2 <= out_valid_reg1;
-            out_valid <= out_valid_reg2;
-            a_reg1 <= a;
-            a_reg2 <= a_reg1;
-            a_reg3 <= a_reg2;
-            b_reg1 <= b;
-            b_reg2 <= b_reg1;
-            b_reg3 <= b_reg2;
-            c_reg1 <= c;
-            c_reg2 <= c_reg1;
-            c_reg3 <= c_reg2;
-            d_reg1 <= d;
-            d_reg2 <= d_reg1;
-            d_reg3 <= d_reg2;
-            q_reg1 <= q;
-            q_reg2 <= q_reg1;
-            q_reg3 <= q_reg2;
-        end
+        Creg1 <= C;
+        out_valid_reg1 <= in_valid;
+        out_valid_reg2 <= out_valid_reg1;
+        out_valid <= out_valid_reg2;
+        a_reg1 <= a;
+        a_reg2 <= a_reg1;
+        a_reg3 <= a_reg2;
+        b_reg1 <= b;
+        b_reg2 <= b_reg1;
+        b_reg3 <= b_reg2;
+        c_reg1 <= c;
+        c_reg2 <= c_reg1;
+        c_reg3 <= c_reg2;
+        d_reg1 <= d;
+        d_reg2 <= d_reg1;
+        d_reg3 <= d_reg2;
+        q_reg1 <= q;
+        q_reg2 <= q_reg1;
+        q_reg3 <= q_reg2;
     end
 
     /*
@@ -238,33 +216,18 @@ module FP8VectorMul2 (
     reg out_valid_reg2;
 
     always @(posedge clk) begin
-        if (rst) begin
-            out_valid_reg1 <= 0;
-            out_valid_reg2 <= 0;
-            out_valid <= 0;
-            a_reg1 <= 0;
-            a_reg2 <= 0;
-            a_reg3 <= 0;
-            b_reg1 <= 0;
-            b_reg2 <= 0;
-            b_reg3 <= 0;
-            c_reg1 <= 0;
-            c_reg2 <= 0;
-            c_reg3 <= 0;
-        end else begin
-            out_valid_reg1 <= in_valid;
-            out_valid_reg2 <= out_valid_reg1;
-            out_valid <= out_valid_reg2;
-            a_reg1 <= a;
-            a_reg2 <= a_reg1;
-            a_reg3 <= a_reg2;
-            b_reg1 <= b;
-            b_reg2 <= b_reg1;
-            b_reg3 <= b_reg2;
-            c_reg1 <= c;
-            c_reg2 <= c_reg1;
-            c_reg3 <= c_reg2;
-        end
+        out_valid_reg1 <= in_valid;
+        out_valid_reg2 <= out_valid_reg1;
+        out_valid <= out_valid_reg2;
+        a_reg1 <= a;
+        a_reg2 <= a_reg1;
+        a_reg3 <= a_reg2;
+        b_reg1 <= b;
+        b_reg2 <= b_reg1;
+        b_reg3 <= b_reg2;
+        c_reg1 <= c;
+        c_reg2 <= c_reg1;
+        c_reg3 <= c_reg2;
     end
 
     DSP #(
