@@ -2,27 +2,34 @@ module FP16_ALU(
     input clk,
     input rst,
     input in_valid,
-    input [3:0] opmode,
+    input [5:0] opmode,
     input [15:0] a,
     input [15:0] b,
     input [15:0] c,
-    output [15:0] out,
+    output reg [15:0] out,
     output out_valid
 );
     /*
         Supported Operation:
-        0000: a*b + c
-        0001: a*b - c
-        0010: 1/a*b + c
-        0011: 1/a*b - c
-        0100: log(a)
-        1000: exp(a)
+        xx0000: a * b + c
+        xx0001: a * b - c
+        xx0010: 1/a * b + c
+        xx0011: 1/a * b - c
+        xx0100: log(a)
+        xx1000: exp(a)
+
+        01xxxx: result is zero     (floating point 1.0 or 0.0)
+        10xxxx: result is positive (floating point 1.0 or 0.0)
+        11xxxx: result is negative (floating point 1.0 or 0.0)
+
         First bit: invert sign of c
         Second big: use inversion of a
         Third bit: use log mode result = log(a.exp) + log(a.mant)
         Fourth bit: use exp mode result = exp(a.exp) * exp(a.mant)
     */
 
+    wire [15:0] fp16_one = 16'b0_01111_0000000000;
+    wire [15:0] fp16_zero = 16'b0_00000_0000000000;
     wire [11:0] a_12 = {a[15], a[14:10], a[9:4]};
     wire [15:0] a_inverse, a_log_exp, a_log_mant, a_exp_exp, a_exp_mant;
 
@@ -45,23 +52,27 @@ module FP16_ALU(
 
     reg fma_in_valid;
     reg [15:0] fma_a, fma_b, fma_c;
+    reg [1:0] post_opmode_reg1, post_opmode_reg2, post_opmode_reg3, post_opmode_reg4;
 
     always @(clk) begin
         fma_in_valid <= in_valid;
-        // fma_a <= opmode[3] ? a_exp_exp : opmode[2] ? a_log_exp : opmode[1] ? a_inverse : a;
-        // fma_b <= opmode[3] ? a_exp_mant : opmode[2] ? 16'b0_01111_0000000000 : b;
-        // fma_c <= opmode[3] ? 16'b0 : {c[15]^opmode[0], c[14:0]};
+        post_opmode_reg1 <= opmode[5:4];
+        post_opmode_reg2 <= post_opmode_reg1;
+        post_opmode_reg3 <= post_opmode_reg2;
+        post_opmode_reg4 <= post_opmode_reg3;
+
         if (opmode[3]) begin
             fma_a <= a_exp_exp;
             fma_b <= a_exp_mant;
             fma_c <= 16'b0;
         end else begin
             fma_a <= opmode[2] ? a_log_exp : opmode[1] ? a_inverse : a;
-            fma_b <= opmode[2] ? 16'b0_01111_0000000000 : b;
+            fma_b <= opmode[2] ? fp16_one : b;
             fma_c <= {c[15]^opmode[0], c[14:0]};
         end
     end
 
+    wire [15:0] fma_out;
     FP16FMA fma_unit(
         .clk(clk),
         .rst(rst),
@@ -70,6 +81,48 @@ module FP16_ALU(
         .b(fma_b),
         .c(fma_c),
         .out_valid(out_valid),
-        .out(out)
+        .out(fma_out)
     );
+
+    always @(*) begin
+        if(post_opmode_reg4[1]) begin
+            out = (fma_out[15] == post_opmode_reg4[0]) ? fp16_one : fp16_zero;
+        end else if(post_opmode_reg4[0]) begin
+            out = (fma_out == fp16_zero) ? fp16_zero : fp16_one;
+        end else begin
+            out = fma_out;
+        end
+    end
+endmodule
+
+
+module FP16ALUArray(
+    input clk,
+    input rst,
+    input in_valid,
+    input [5:0] opmode,
+    input [0:15][15:0] a,
+    input [0:15][15:0] b,
+    input [0:15][15:0] c,
+    output [0:15][15:0] out,
+    output out_valid
+);
+    genvar i;
+    wire [15:0] total_out_valid;
+    assign out_valid = total_out_valid[0];
+    generate
+        for(i = 0; i < 16; i = i + 1) begin: FP16_ALU
+            FP16_ALU alu(
+                .clk(clk),
+                .rst(rst),
+                .in_valid(in_valid),
+                .opmode(opmode),
+                .a(a[i]),
+                .b(b[i]),
+                .c(c[i]),
+                .out(out[i]),
+                .out_valid(total_out_valid)
+            );
+        end
+    endgenerate
 endmodule

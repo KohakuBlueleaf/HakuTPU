@@ -296,7 +296,7 @@ module FP16FMA (
 endmodule
 
 
-module fp16_fma_synth_fate_top(
+module fp16_fma_synth_fake_top(
     input clk,
     input rst,
     output [7:0] led_tri_io

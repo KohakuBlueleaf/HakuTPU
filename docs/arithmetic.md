@@ -203,3 +203,35 @@ For exponential `e^x`, we have `exp(x) = exp(seeeee) * exp(1.mmmmmm)`, where `ex
 for subnormal number, we have `e * exp(0.mmmmmm)` (or `exp(0.mmmmmm)/e`) where `exp(0.mmmmmm)` is another 6input 11output, since exp(0) = 1 and exp(1) = 2, the exponent should be 0 or 1.
 
 Totally we need 15 + 11 + 11 = 37 LUT for exp mapping.
+
+
+### FP24 FMA
+Similar to FP16 but we need different arrangement for the exponent part, since FP24 have 7 exponent bit:
+
+```
+DSP for exponent:
+000001000000000001                                  B(18)
+*
+(
+00000000000000000000000eeeeeee                      A(30): Exponent from a
++
+000000ooooooooo00000eeeeeee                         D(27): Exponent from b and exponent offset
+)
++
+0000000000000000000000000000eeeeeeee0000oooooooo    C(48): Exponent from -c
+=
+000000000000000ooooooooo000xeeeeeeee0000eeeeeeee    B*(A+D): Exponent a+b-63 and a+b 
++
+0000000000000000000000000000eeeeeeee0000oooooooo    C(48): Exponent from -c
+=
+000000000000000ooooooooo00xxeeeeeeee0000eeeeeeee    B*(A+D) + C Exponent a+b-63(ab_exp), and a+b-63-c (shift of c_mant)
+
+DSP for mantissa:
+0001.mmmmmmmmmmmmmm                                  B(18): mantissa from a (cutoff last 2 mantissa bit)
+*
+0000000000000001.mmmmmmmmmmmmmm                      A(30): mantissa from b (cutoff last 2 mantissa bit)
++
+00000000000000000001.mmmmmmmmmmmmmmmm000000000000    C(48): shifted mantissa from c 
+=
+00000000000000000mmm.mmmmmmmmmmmmmmmmmmmmmmmmmmmm    B*A + c: 1.a * 1.b +/- 1.c(shifted)
+```

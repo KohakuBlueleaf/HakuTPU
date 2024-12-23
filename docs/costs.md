@@ -31,3 +31,17 @@ In this documentation we list all the vivado synthesised result to check the res
   * Output: 1/a
   * resource cost: 38LUT
   * performance: combinational
+
+* FP8-FP12 4x8x4 Tensor Core
+  * Input: A(4x8 FP8), B(8x4 FP8), C(4x4 FP16)
+  * Output: (AxB + C) (4x4 FP16)
+  * resource cost: 12731LUT, 7549FF, 64DSP
+  * performance:
+    * 16-cycle latency, 1-cycle throughput
+
+* FP16ALU array
+  * Input: [a, b, c]*16 (FP16), 6bit OPMODE
+  * Output: [out] * 16 (FP16)
+  * resource cost: 6643LUT, 2090FF, 32DSP
+  * performance:
+    * 4-cycle latency, 1-cycle throughput
