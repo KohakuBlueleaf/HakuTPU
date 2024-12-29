@@ -57,7 +57,7 @@ Therefore we decided to design our own NoC system.
 * artbitration
 * back preasure
 
-| NoC Router Arch | 2D mesh example |
+| NoC Router Arch                                | 2D mesh example                                |
 | ---------------------------------------------- | ---------------------------------------------- |
 | ![1735483831920](image/README/1735483831920.png) | ![1735483805869](image/README/1735483805869.png) |
 
@@ -113,3 +113,9 @@ Each compute unit can perform 4x8x4 matmul with complex FP16 operation (FMA, div
 Each compute unit will cost 22\~25k LUT, 8\~12K FF, 96DSP and 16BRAMs.
 
 Which means we can maximumlly put 72 compute unit into xcvu13p. but to get more flexibility in the whole functionality, we will consider to use 48\~64 compute unit in total. Based on Nvidia's marketing form, you can say our project will eventually have 768\~1280 CUDA cores and 48\~72 Tensor cores.
+
+## License
+
+This project is still working in progress, during the WIP state, all the source code and related resource will be released in a custom Kohaku-Code-License (or Kohaku-License if needed) which is an open-access license and have some restriction on commercial usage.
+
+For more info please check the License File.
