@@ -24,7 +24,7 @@ module OutPortSwitch #(
         if both pos_x,y are different from POS_X,Y, we choose direction based on the distance
         larger distance axis is chosen
     */
-    reg [4:0] port_rr2;
+    wire [4:0] current_valid = ports_valid & ~ports_clear;
     reg [4:0] port_selection;
     reg [2:0] port_rr;
     wire [2:0] pr1, pr2, pr3, pr4, pr5;
@@ -36,15 +36,15 @@ module OutPortSwitch #(
     
     always @(*) begin
         port_selection = 5'b0;
-        if (ports_valid[pr1]) begin
+        if (current_valid[pr1]) begin
             port_selection[pr1] = 1'b1;
-        end else if (ports_valid[pr2]) begin
+        end else if (current_valid[pr2]) begin
             port_selection[pr2] = 1'b1;
-        end else if (ports_valid[pr3]) begin
+        end else if (current_valid[pr3]) begin
             port_selection[pr3] = 1'b1;
-        end else if (ports_valid[pr4]) begin
+        end else if (current_valid[pr4]) begin
             port_selection[pr4] = 1'b1;
-        end else if (ports_valid[pr5]) begin
+        end else if (current_valid[pr5]) begin
             port_selection[pr5] = 1'b1;
         end
     end

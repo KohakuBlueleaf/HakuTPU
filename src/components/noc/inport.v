@@ -60,7 +60,8 @@ module InPortSwitch #(
         (pos_x > POS_X) ? 1'b1 : 1'b0, //east
         (pos_y < POS_Y) ? 1'b1 : 1'b0  //north
     };
-    wire [4:0] avail_port = port_choice & ~port_valid;
+    wire [4:0] real_port_valid = port_valid & ~clear;
+    wire [4:0] avail_port = port_choice & ~real_port_valid;
     wire [4:0] masked_avail_port = avail_port & direction_rr;
 
     always @(posedge clk, posedge rst) begin
@@ -84,7 +85,7 @@ module InPortSwitch #(
                             5'b01000: port_out[3] <= current_data; //west
                             5'b10000: port_out[4] <= current_data; //local
                         endcase
-                        port_valid <= (port_valid | masked_avail_port) ^ clear;
+                        port_valid <= real_port_valid | masked_avail_port;
                         if(use_cache) begin
                             use_cache <= 1'b0;
                             next_data <= 1'b0;
@@ -108,7 +109,7 @@ module InPortSwitch #(
                             5'b01000: port_out[3] <= current_data; //west
                             5'b10000: port_out[4] <= current_data; //local
                         endcase
-                        port_valid <= (port_valid | avail_port) ^ clear;
+                        port_valid <= real_port_valid | avail_port;
                         if(use_cache) begin
                             use_cache <= 1'b0;
                             next_data <= 1'b0;
@@ -135,14 +136,9 @@ module InPortSwitch #(
                     port_valid <= port_valid ^ clear;
                     next_data <= 1'b0;
                 end
-            end else begin
-                if(next_data) begin
-                    cache <= rd_data;
-                    use_cache <= 1'b1;
-                end else begin
-                    use_cache <= use_cache;
-                    cache <= cache;
-                end
+            end else begin // FIFO is empty and no cache, do nothing
+                use_cache <= 1'b0;
+                cache <= cache;
                 state <= 1'b0;
                 port_valid <= port_valid ^ clear;
                 next_data <= 1'b0;
