@@ -13,9 +13,17 @@ Which have 1728k LUTs, 3456K FFs and 12288 DSPs.
 
 ### Fundamental Components
 
+* [ ] NoC
+
+  * [X] Router
+  * [ ] AXI4 to NoC
+    * [ ] Stream
+    * [ ] Lite
+    * [ ] Full
+  * [ ] Client Example
 * [ ] Global Controller
 * [ ] Unit Controller
-* [ ] 288bit buffer by BRAM
+* [X] 288bit buffer by BRAM
 * [X] Tensor Core: 4x8x4 FP8 mul FP12 accu
 
   * [X] 32 x 1x4 FP8VectorMul
@@ -26,11 +34,31 @@ Which have 1728k LUTs, 3456K FFs and 12288 DSPs.
   * [X] FP12 inversion
   * [X] FP12 exp/log
 * [ ] High Precision ALU stacks
+
   * Support 2 FP24 precision input and 1 FP24 precision output per cycle.
   * Support division, log, exp, sqrt, cos, sin, tanh with one cycle throughput
   * *Low Priority, may be some addon module around global controller*
 
+### NoC
+
+To connect 32 or more Compute Unit together, use bus-based system need very complex interconnect system (such as AXI4 interconnect) which need tons of resources and hard to implement/manage.
+
+Therefore we decided to design our own NoC system.
+
+#### Features
+
+* High bandwidth
+* 2d mesh network
+* 1cycle through put
+* artbitration
+* back preasure
+
+| ![1735475730877](image/README/1735475730877.png) | ![1735475754257](image/README/1735475754257.png) |
+| ---------------------------------------------- | ---------------------------------------------- |
+
 ### Compute Unit
+
+![1735476004465](image/README/1735476004465.png)
 
 Each compute unit have following components
 
