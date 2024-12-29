@@ -103,60 +103,56 @@ def generate_log_exp_lut(
     return lut
 
 
-def generate_exp_lut(
+def generate_exp_lut_int(
     input_bits: int, output_exp_bits: int, output_man_bits: int
 ) -> dict:
     """Generate LUT for exp(x) where x is in [0, ln(2))"""
     lut = {}
-
-    for i in range(1 << input_bits):
-        input_val = 1 + (i / (1 << input_bits))
-        exp_val = np.exp(input_val)
-
-        # Convert result to output format
-        fp_result = FPNumber.from_float(exp_val, output_exp_bits, output_man_bits)
-        lut[i] = fp_result.to_bits()
-
-    return lut
-
-
-def generate_exp_lut_subnorm(
-    input_bits: int, output_exp_bits: int, output_man_bits: int
-) -> dict:
-    """Generate LUT for exp(x) where x is in [0, ln(2))"""
-    lut = {}
-
-    for i in range(1 << input_bits):
-        input_val = (i / (1 << input_bits))
-        exp_val = np.exp(input_val)
-
-        # Convert result to output format
-        fp_result = FPNumber.from_float(exp_val, output_exp_bits, output_man_bits)
-        lut[i] = fp_result.to_bits()
-
-    return lut
-
-
-def generate_exp_lut_exp(
-    input_exp_bits: int, output_exp_bits: int, output_man_bits: int
-) -> dict:
-    """Generate LUT for exp(x) where x is in [0, ln(2))"""
-    lut = {}
-    # convert i to exponent, when we have n exp bits, the offset is 2^(n-1)-1.
-    exp_offset = (1 << (input_exp_bits - 1)) - 1
 
     for sign in [0, 1]:
-        for i in range(1 << input_exp_bits):
-            input_val = 2**(i - exp_offset) * (-1)**sign
+        for i in range(1 << input_bits):
+            input_val = float(i) * (-1)**sign
             exp_val = np.exp(input_val)
 
             # Convert result to output format
-            try:
-                fp_result = FPNumber.from_float(exp_val, output_exp_bits, output_man_bits)
-                lut[i + (sign << input_exp_bits)] = fp_result.to_bits()
-            except (ValueError, OverflowError):
-                print(input_val, exp_val, "error")
-                lut[i + (sign << input_exp_bits)] = int("0"+"1"*(output_exp_bits)+"0"*output_man_bits, 2)
+            fp_result = FPNumber.from_float(exp_val, output_exp_bits, output_man_bits)
+            lut[i + (sign << input_bits)] = fp_result.to_bits()
+
+    return lut
+
+
+def generate_exp_lut_high_frac(
+    input_bits: int, output_exp_bits: int, output_man_bits: int
+) -> dict:
+    """Generate LUT for exp(x) where x is in [0, ln(2))"""
+    lut = {}
+
+    for sign in [0, 1]:
+        for i in range(1 << input_bits):
+            input_val = float(i)/(2**input_bits) * (-1)**sign
+            exp_val = np.exp(input_val)
+
+            # Convert result to output format
+            fp_result = FPNumber.from_float(exp_val, output_exp_bits, output_man_bits)
+            lut[i + (sign << input_bits)] = fp_result.to_bits()
+
+    return lut
+
+
+def generate_exp_lut_low_frac(
+    input_bits: int, output_exp_bits: int, output_man_bits: int
+) -> dict:
+    """Generate LUT for exp(x) where x is in [0, ln(2))"""
+    lut = {}
+
+    for sign in [0, 1]:
+        for i in range(1 << input_bits):
+            input_val = float(i)/(2**(input_bits*2)) * (-1)**sign
+            exp_val = np.exp(input_val)
+
+            # Convert result to output format
+            fp_result = FPNumber.from_float(exp_val, output_exp_bits, output_man_bits)
+            lut[i + (sign << input_bits)] = fp_result.to_bits()
 
     return lut
 
@@ -210,23 +206,33 @@ if __name__ == "__main__":
     #     print("".join(reversed(list(i))))
 
     # Generate exp LUT
-    exp_lut = generate_exp_lut(6, 5, 10)  # 6-bit input to FP16
-    exp_lut_exp = generate_exp_lut_exp(5, 5, 10)  # 5-bit exp input to FP16
+    exp_lut_int = generate_exp_lut_int(5, 5, 10)
+    exp_lut_high_frac = generate_exp_lut_high_frac(5, 5, 10)
+    exp_lut_low_frac = generate_exp_lut_low_frac(5, 5, 10)
     results = []
     for i in range(1 << 6):
-        results.append(f"{exp_lut[i]:016b}")
-        print(f"{exp_lut[i]:016b}: {FPNumber.from_bits(exp_lut[i], 5, 10).to_float()}")
+        results.append(f"{exp_lut_int[i]:016b}")
+        print(f"{exp_lut_int[i]:016b}: {FPNumber.from_bits(exp_lut_int[i], 5, 10).to_float()}")
     for i in zip(*results):
         print("".join(reversed(list(i))))
 
     print()
-
     results = []
     for i in range(1 << 6):
-        results.append(f"{exp_lut_exp[i]:016b}")
-        # print(f"{log_exp_lut[i]:016b}: {FPNumber.from_bits(log_exp_lut[i], 5, 10).to_float()}")
+        results.append(f"{exp_lut_high_frac[i]:016b}")
+        print(f"{exp_lut_high_frac[i]:016b}: {FPNumber.from_bits(exp_lut_high_frac[i], 5, 10).to_float()}")
     for i in zip(*results):
         print("".join(reversed(list(i))))
+
+    print()
+    results = []
+    for i in range(1 << 6):
+        results.append(f"{exp_lut_low_frac[i]:016b}")
+        print(f"{exp_lut_low_frac[i]:016b}: {FPNumber.from_bits(exp_lut_low_frac[i], 5, 10).to_float()}")
+    for i in zip(*results):
+        print("".join(reversed(list(i))))
+
+    print()
 
     # Test inverse function
     print("\nTesting inverse LUT:")
@@ -251,14 +257,14 @@ if __name__ == "__main__":
         )
 
     # Test exp function
-    print("\nTesting exp LUT:")
-    test_values = [0.0, 0.2, 0.4, 0.6]
-    for val in test_values:
-        idx = int((val) * (1 << 6))
-        lut_result = FPNumber.from_bits(exp_lut[idx], 5, 10)
-        diff = np.exp(val) - lut_result.to_float()
-        APE = abs(diff) / np.exp(val) * 100 if diff else 0
-        print(
-            f"exp({val:.3f}) = {lut_result.to_float():.6f}"
-            f" (actual = {np.exp(val):.6f}, APE = {APE:.2f}%)"
-        )
+    # print("\nTesting exp LUT:")
+    # test_values = [0.0, 0.2, 0.4, 0.6]
+    # for val in test_values:
+    #     idx = int((val) * (1 << 6))
+    #     lut_result = FPNumber.from_bits(exp_lut[idx], 5, 10)
+    #     diff = np.exp(val) - lut_result.to_float()
+    #     APE = abs(diff) / np.exp(val) * 100 if diff else 0
+    #     print(
+    #         f"exp({val:.3f}) = {lut_result.to_float():.6f}"
+    #         f" (actual = {np.exp(val):.6f}, APE = {APE:.2f}%)"
+    #     )

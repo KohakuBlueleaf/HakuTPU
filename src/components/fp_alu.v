@@ -31,7 +31,7 @@ module FP16_ALU(
     wire [15:0] fp16_one = 16'b0_01111_0000000000;
     wire [15:0] fp16_zero = 16'b0_00000_0000000000;
     wire [11:0] a_12 = {a[15], a[14:10], a[9:4]};
-    wire [15:0] a_inverse, a_log_exp, a_log_mant, a_exp_exp, a_exp_mant;
+    wire [15:0] a_inverse, a_log_exp, a_log_mant, a_partial_exp1, a_partial_exp2;
 
     FP12Inverse inverse_a(
         .a(a_12),
@@ -40,8 +40,8 @@ module FP16_ALU(
 
     FP12PartialExp exp_a(
         .a(a_12),
-        .exp_exp(a_exp_exp),
-        .mant_exp(a_exp_mant)
+        .partial_exp1(a_partial_exp1),
+        .partial_exp2(a_partial_exp2)
     );
 
     FP12PartialLog log_a(
@@ -62,8 +62,8 @@ module FP16_ALU(
         post_opmode_reg4 <= post_opmode_reg3;
 
         if (opmode[3]) begin
-            fma_a <= a_exp_exp;
-            fma_b <= a_exp_mant;
+            fma_a <= a_partial_exp1;
+            fma_b <= a_partial_exp2;
             fma_c <= 16'b0;
         end else begin
             fma_a <= opmode[2] ? a_log_exp : opmode[1] ? a_inverse : a;
