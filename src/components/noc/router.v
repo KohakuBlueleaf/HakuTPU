@@ -2,50 +2,145 @@ module NoCRouter #(
     parameter DATA_WIDTH = 216,
     parameter FIFO_DEPTH = 4096,
     parameter POS_WIDTH = 4,
-    parameter POS_X = 0,
-    parameter POS_Y = 0
+    parameter POS_X = 1,
+    parameter POS_Y = 1
 )(
     input clk,
     input rst,
     
-    // North Port Signals
-    input wire [DATA_WIDTH-1:0] north_in_port,
+    // North Port
+    (* X_INTERFACE_INFO = "kblueleaf.net:user:HakuNoCPort:1.0" *)
+    (* X_INTERFACE_MODE = "slave" *)
+    (* X_INTERFACE_PARAMETER = "GROUP north_in" *)
+    input wire [DATA_WIDTH-1:0] north_in_data,
+    (* X_INTERFACE_INFO = "kblueleaf.net:user:HakuNoCPort:1.0" *)
+    (* X_INTERFACE_MODE = "slave" *)
+    (* X_INTERFACE_PARAMETER = "GROUP north_in" *)
     input wire north_in_valid,
+    (* X_INTERFACE_INFO = "kblueleaf.net:user:HakuNoCPort:1.0" *)
+    (* X_INTERFACE_MODE = "slave" *)
+    (* X_INTERFACE_PARAMETER = "GROUP north_in" *)
     output wire north_in_busy,
-    output wire [DATA_WIDTH-1:0] north_out_port,
+
+    (* X_INTERFACE_INFO = "kblueleaf.net:user:HakuNoCPort:1.0" *)
+    (* X_INTERFACE_MODE = "master" *)
+    (* X_INTERFACE_PARAMETER = "GROUP north_out" *)
+    output wire [DATA_WIDTH-1:0] north_out_data,
+    (* X_INTERFACE_INFO = "kblueleaf.net:user:HakuNoCPort:1.0" *)
+    (* X_INTERFACE_MODE = "master" *)
+    (* X_INTERFACE_PARAMETER = "GROUP north_out" *)
     output wire north_out_valid,
+    (* X_INTERFACE_INFO = "kblueleaf.net:user:HakuNoCPort:1.0" *)
+    (* X_INTERFACE_MODE = "master" *)
+    (* X_INTERFACE_PARAMETER = "GROUP north_out" *)
     input wire north_out_busy,
 
-    // East Port Signals
-    input wire [DATA_WIDTH-1:0] east_in_port,
+    // East Port
+    (* X_INTERFACE_INFO = "kblueleaf.net:user:HakuNoCPort:1.0" *)
+    (* X_INTERFACE_MODE = "slave" *)
+    (* X_INTERFACE_PARAMETER = "GROUP east_in" *)
+    input wire [DATA_WIDTH-1:0] east_in_data,
+    (* X_INTERFACE_INFO = "kblueleaf.net:user:HakuNoCPort:1.0" *)
+    (* X_INTERFACE_MODE = "slave" *)
+    (* X_INTERFACE_PARAMETER = "GROUP east_in" *)
     input wire east_in_valid,
+    (* X_INTERFACE_INFO = "kblueleaf.net:user:HakuNoCPort:1.0" *)
+    (* X_INTERFACE_MODE = "slave" *)
+    (* X_INTERFACE_PARAMETER = "GROUP east_in" *)
     output wire east_in_busy,
-    output wire [DATA_WIDTH-1:0] east_out_port,
+
+    (* X_INTERFACE_INFO = "kblueleaf.net:user:HakuNoCPort:1.0" *)
+    (* X_INTERFACE_MODE = "master" *)
+    (* X_INTERFACE_PARAMETER = "GROUP east_out" *)
+    output wire [DATA_WIDTH-1:0] east_out_data,
+    (* X_INTERFACE_INFO = "kblueleaf.net:user:HakuNoCPort:1.0" *)
+    (* X_INTERFACE_MODE = "master" *)
+    (* X_INTERFACE_PARAMETER = "GROUP east_out" *)
     output wire east_out_valid,
+    (* X_INTERFACE_INFO = "kblueleaf.net:user:HakuNoCPort:1.0" *)
+    (* X_INTERFACE_MODE = "master" *)
+    (* X_INTERFACE_PARAMETER = "GROUP east_out" *)
     input wire east_out_busy,
 
-    // South Port Signals
-    input wire [DATA_WIDTH-1:0] south_in_port,
+    // South Port
+    (* X_INTERFACE_INFO = "kblueleaf.net:user:HakuNoCPort:1.0" *)
+    (* X_INTERFACE_MODE = "slave" *)
+    (* X_INTERFACE_PARAMETER = "GROUP south_in" *)
+    input wire [DATA_WIDTH-1:0] south_in_data,
+    (* X_INTERFACE_INFO = "kblueleaf.net:user:HakuNoCPort:1.0" *)
+    (* X_INTERFACE_MODE = "slave" *)
+    (* X_INTERFACE_PARAMETER = "GROUP south_in" *)
     input wire south_in_valid,
+    (* X_INTERFACE_INFO = "kblueleaf.net:user:HakuNoCPort:1.0" *)
+    (* X_INTERFACE_MODE = "slave" *)
+    (* X_INTERFACE_PARAMETER = "GROUP south_in" *)
     output wire south_in_busy,
-    output wire [DATA_WIDTH-1:0] south_out_port,
+
+    (* X_INTERFACE_INFO = "kblueleaf.net:user:HakuNoCPort:1.0" *)
+    (* X_INTERFACE_MODE = "master" *)
+    (* X_INTERFACE_PARAMETER = "GROUP south_out" *)
+    output wire [DATA_WIDTH-1:0] south_out_data,
+    (* X_INTERFACE_INFO = "kblueleaf.net:user:HakuNoCPort:1.0" *)
+    (* X_INTERFACE_MODE = "master" *)
+    (* X_INTERFACE_PARAMETER = "GROUP south_out" *)
     output wire south_out_valid,
+    (* X_INTERFACE_INFO = "kblueleaf.net:user:HakuNoCPort:1.0" *)
+    (* X_INTERFACE_MODE = "master" *)
+    (* X_INTERFACE_PARAMETER = "GROUP south_out" *)
     input wire south_out_busy,
 
-    // West Port Signals
-    input wire [DATA_WIDTH-1:0] west_in_port,
+    // West Port
+    (* X_INTERFACE_INFO = "kblueleaf.net:user:HakuNoCPort:1.0" *)
+    (* X_INTERFACE_MODE = "slave" *)
+    (* X_INTERFACE_PARAMETER = "GROUP west_in" *)
+    input wire [DATA_WIDTH-1:0] west_in_data,
+    (* X_INTERFACE_INFO = "kblueleaf.net:user:HakuNoCPort:1.0" *)
+    (* X_INTERFACE_MODE = "slave" *)
+    (* X_INTERFACE_PARAMETER = "GROUP west_in" *)
     input wire west_in_valid,
+    (* X_INTERFACE_INFO = "kblueleaf.net:user:HakuNoCPort:1.0" *)
+    (* X_INTERFACE_MODE = "slave" *)
+    (* X_INTERFACE_PARAMETER = "GROUP west_in" *)
     output wire west_in_busy,
-    output wire [DATA_WIDTH-1:0] west_out_port,
+
+    (* X_INTERFACE_INFO = "kblueleaf.net:user:HakuNoCPort:1.0" *)
+    (* X_INTERFACE_MODE = "master" *)
+    (* X_INTERFACE_PARAMETER = "GROUP west_out" *)
+    output wire [DATA_WIDTH-1:0] west_out_data,
+    (* X_INTERFACE_INFO = "kblueleaf.net:user:HakuNoCPort:1.0" *)
+    (* X_INTERFACE_MODE = "master" *)
+    (* X_INTERFACE_PARAMETER = "GROUP west_out" *)
     output wire west_out_valid,
+    (* X_INTERFACE_INFO = "kblueleaf.net:user:HakuNoCPort:1.0" *)
+    (* X_INTERFACE_MODE = "master" *)
+    (* X_INTERFACE_PARAMETER = "GROUP west_out" *)
     input wire west_out_busy,
 
-    // Local Port Signals
-    input wire [DATA_WIDTH-1:0] local_in_port,
+    // Local Port
+    (* X_INTERFACE_INFO = "kblueleaf.net:user:HakuNoCPort:1.0" *)
+    (* X_INTERFACE_MODE = "slave" *)
+    (* X_INTERFACE_PARAMETER = "GROUP local_in" *)
+    input wire [DATA_WIDTH-1:0] local_in_data,
+    (* X_INTERFACE_INFO = "kblueleaf.net:user:HakuNoCPort:1.0" *)
+    (* X_INTERFACE_MODE = "slave" *)
+    (* X_INTERFACE_PARAMETER = "GROUP local_in" *)
     input wire local_in_valid,
+    (* X_INTERFACE_INFO = "kblueleaf.net:user:HakuNoCPort:1.0" *)
+    (* X_INTERFACE_MODE = "slave" *)
+    (* X_INTERFACE_PARAMETER = "GROUP local_in" *)
     output wire local_in_busy,
-    output wire [DATA_WIDTH-1:0] local_out_port,
+
+    (* X_INTERFACE_INFO = "kblueleaf.net:user:HakuNoCPort:1.0" *)
+    (* X_INTERFACE_MODE = "master" *)
+    (* X_INTERFACE_PARAMETER = "GROUP local_out" *)
+    output wire [DATA_WIDTH-1:0] local_out_data,
+    (* X_INTERFACE_INFO = "kblueleaf.net:user:HakuNoCPort:1.0" *)
+    (* X_INTERFACE_MODE = "master" *)
+    (* X_INTERFACE_PARAMETER = "GROUP local_out" *)
     output wire local_out_valid,
+    (* X_INTERFACE_INFO = "kblueleaf.net:user:HakuNoCPort:1.0" *)
+    (* X_INTERFACE_MODE = "master" *)
+    (* X_INTERFACE_PARAMETER = "GROUP local_out" *)
     input wire local_out_busy
 );
     wire [DATA_WIDTH-1:0] n2n, n2e, n2s, n2w, n2l;
