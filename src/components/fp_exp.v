@@ -1,17 +1,17 @@
-module FP12PartialExp (
-    input [11:0] a,
+module FP16PartialExp (
+    input [15:0] a,
     output [15:0] partial_exp1,
     output [15:0] partial_exp2
 );
-    wire sign = a[11];
-    wire [4:0] exp = a[10:6];
-    wire [5:0] mant = a[5:0];
+    wire sign = a[15];
+    wire [4:0] exp = a[14:10];
+    wire [9:0] mant = a[9:0];
     wire subnorm = exp==5'b00000;
     wire [25:0] fixed_point = subnorm?
                         (exp > 0 
-                            ? {16'b0000000000000001, mant, 4'b0000} << (exp - 15)
-                            : {16'b0000000000000001, mant, 4'b0000} >> (-exp + 15)
-                        ) : {16'b0000000000000000, mant, 4'b0000} >> 14;
+                            ? {16'b0000000000000001, mant} << (exp - 15)
+                            : {16'b0000000000000001, mant} >> (-exp + 15)
+                        ) : {16'b0000000000000000, mant} >> 14;
     wire [10:0] overflow_part;
     wire [4:0] int, high_frac, low_frac;
     wire overflow;
