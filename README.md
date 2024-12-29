@@ -19,7 +19,11 @@ Which have 1728k LUTs, 3456K FFs and 12288 DSPs.
   * [ ] AXI4 to NoC
     * [ ] Stream
     * [ ] Lite
+      * [ ] Master
+      * [ ] Slave
     * [ ] Full
+      * [ ] Master
+      * [ ] Slave
   * [ ] Client Example
 * [ ] Global Controller
 * [ ] Unit Controller
@@ -53,14 +57,15 @@ Therefore we decided to design our own NoC system.
 * artbitration
 * back preasure
 
-| ![1735483831920](image/README/1735483831920.png) | ![1735483805869](image/README/1735483805869.png) |
+| NoC Router Arch | 2D mesh example |
 | ---------------------------------------------- | ---------------------------------------------- |
+| ![1735483831920](image/README/1735483831920.png) | ![1735483805869](image/README/1735483805869.png) |
 
 ### Compute Unit
 
 | Overall Arch                                   | Tensor Core Design                             | FP16 ALU Design                                |
 | ---------------------------------------------- | ---------------------------------------------- | ---------------------------------------------- |
-| ![1735476004465](image/README/1735476004465.png) | ![1735476236271](image/README/1735476236271.png) | ![1735483634414](image/README/1735483634414.png) |
+| ![1735476004465](image/README/1735476004465.png) | ![1735476236271](image/README/1735476236271.png) | ![1735488066179](image/README/1735488066179.png) |
 
 Each compute unit have following components
 
