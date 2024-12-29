@@ -198,14 +198,17 @@ totally we need 15 + 8 + 15 = 38 LUT for log mapping
 
 ### EXP
 
-For exponential `e^x`, we have `exp(x) = exp(seeeee) * exp(1.mmmmmm)`, where `exp(seeeee)` is 6input 15output(positive) and `exp(1.mmmmmm)` is 6input 11output (since the exp(1) = 2.x and exp(2) = 7.x, the exponent part should definitely be 1 or 2 and you only need 1 bit to determine it).
+For exponential `e^x`, we consider a fixed point number representation of x here which can be seen as (1.mmmmmm) << (2^exp - 15).
+Than we consider 3 chunk, 5 bit in integer, 5 bit in higher 5bit in fraction and 5bit in lower 5bit of fraction part. 
 
-for subnormal number, we have `e * exp(0.mmmmmm)` (or `exp(0.mmmmmm)/e`) where `exp(0.mmmmmm)` is another 6input 11output, since exp(0) = 1 and exp(1) = 2, the exponent should be 0 or 1.
+We only need 5bit in integer since exp(15) will be inf and exp(-15) will be 0.
 
-Totally we need 15 + 11 + 11 = 37 LUT for exp mapping.
+Than we consider 2 sitaution: integer is 0 -> use 2 fraction part, integer is not 0 -> use integer and higher fraction part.
 
+So we need 3 6bit(5bit + sign bit) to 15bit output (can be optimized to 15*2+11), and we use 2 of them as partial result tham multiply together (exp(a+b) = exp(a) * exp(b))
 
 ### FP24 FMA
+
 Similar to FP16 but we need different arrangement for the exponent part, since FP24 have 7 exponent bit:
 
 ```
