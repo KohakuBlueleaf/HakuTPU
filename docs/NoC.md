@@ -17,7 +17,9 @@ Since all of our compute unit will run in same or frequency divided by power of 
 * Same design of all port, you can connect PE on north/east/south/west porst as well
 * Allow max `n*m + 2(n+n)` PE for `n*m` router mesh
 
-![1735365545163](image/NoC/1735365545163.png)![1735365563697](image/NoC/1735365563697.png)
+| NoC Router Arch                                | 2D mesh example                                |
+| ---------------------------------------------- | ---------------------------------------------- |
+| ![1735483831920](image/NoC/1735483831920.png) | ![1735483805869](image/NoC/1735483805869.png) |
 
 ## Router
 
