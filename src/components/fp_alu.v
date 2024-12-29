@@ -39,7 +39,7 @@ module FP16_ALU(
     );
 
     FP12PartialExp exp_a(
-        .a(a_12),
+        .a(a),
         .partial_exp1(a_partial_exp1),
         .partial_exp2(a_partial_exp2)
     );
