@@ -53,12 +53,14 @@ Therefore we decided to design our own NoC system.
 * artbitration
 * back preasure
 
-| ![1735475730877](image/README/1735475730877.png) | ![1735475754257](image/README/1735475754257.png) |
+| ![1735483831920](image/README/1735483831920.png) | ![1735483805869](image/README/1735483805869.png) |
 | ---------------------------------------------- | ---------------------------------------------- |
 
 ### Compute Unit
 
-![1735476004465](image/README/1735476004465.png)
+| Overall Arch                                   | Tensor Core Design                             | FP16 ALU Design                                |
+| ---------------------------------------------- | ---------------------------------------------- | ---------------------------------------------- |
+| ![1735476004465](image/README/1735476004465.png) | ![1735476236271](image/README/1735476236271.png) | ![1735483634414](image/README/1735483634414.png) |
 
 Each compute unit have following components
 
